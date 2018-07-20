@@ -12,7 +12,7 @@ class RootTabController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.viewControllers = [
-            
+            AllMealsViewController(style: .plain)
         ]
     }
 }

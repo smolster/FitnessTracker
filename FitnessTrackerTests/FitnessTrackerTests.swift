@@ -8,29 +8,28 @@
 
 import XCTest
 @testable import FitnessTracker
+import ReactiveSwift
 
 class FitnessTrackerTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testNothing() {
+        
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
+//    func testDaysFunction() {
+//        let mealObjects: [MealObject] = [
+//            MealObject(date: .init(), proteinGrams: 0, fatGrams: 0, carbGrams: 0),
+//            MealObject(date: .init(), proteinGrams: 1, fatGrams: 1, carbGrams: 1),
+//            MealObject(date: .init(timeIntervalSinceNow: -100000), proteinGrams: 0, fatGrams: 0, carbGrams: 0),
+//            MealObject(date: .init(timeIntervalSinceNow: -100100), proteinGrams: 0, fatGrams: 0, carbGrams: 0),
+//            MealObject(date: .distantPast, proteinGrams: 0, fatGrams: 0, carbGrams: 0),
+//            MealObject(date: .distantFuture, proteinGrams: 0, fatGrams: 0, carbGrams: 0),
+//        ]
+//
+//        let allDays = days(from: mealObjects, using: .current)
+//
+//        XCTAssert(allDays.count == 4, "Should be four different dates")
+//    }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
     
 }
