@@ -9,15 +9,35 @@
 import Foundation
 
 public struct Meal {
-    public let entryDate: Date
-    public let macros: Macros
     
-    public var calories: Calories {
-        return .init(rawValue: (macros.protein.rawValue * 4) + (macros.carbs.rawValue * 4) + (macros.fat.rawValue * 9))
+    public typealias ComponentAndAmount = (component: Component, amount: Grams)
+    
+    public enum Component: MacroCalculatable {
+        case recipe(Recipe)
+        case ingredient(Ingredient)
+        
+        public func macros(in gramsOfItem: Grams) -> MacroCount {
+            switch self {
+            case .recipe(let recipe): return recipe.macros(in: gramsOfItem)
+            case .ingredient(let ingredient): return ingredient.macros(in: gramsOfItem)
+            }
+        }
     }
     
-    public init(entryDate: Date, macros: Macros) {
+    public let entryDate: Date
+    public let componentsAndAmounts: [ComponentAndAmount]
+    
+    public let totalMacros: MacroCount
+    
+    public var calories: Calories {
+        return totalMacros.calories
+    }
+    
+    public init(entryDate: Date, componentsAndAmounts: [ComponentAndAmount]) {
         self.entryDate = entryDate
-        self.macros = macros
+        self.componentsAndAmounts = componentsAndAmounts
+        self.totalMacros = componentsAndAmounts.reduce(.zero) { result, item in
+            return result + item.component.macros(in: item.amount)
+        }
     }
 }

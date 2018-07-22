@@ -51,7 +51,7 @@ internal final class IngredientCreationViewModel: IngredientCreationViewModelTyp
                 fatGramsProperty.signal
             )
             .map { ($0.0 ?? .zero, $0.1 ?? .zero, $0.2 ?? .zero) }
-            .map(Macros.init)
+            .map(MacroCount.init)
             .combineLatest(with: nameProperty.signal.skipNil())
             .map { ($1, $0) }
             .map(Ingredient.init)

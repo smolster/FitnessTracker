@@ -34,11 +34,12 @@ internal final class AllMealsViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "All Meals"
         self.tableView.set(dataProvider: dataProvider)
         self.viewModel.outputs.days
             .observe(on: UIScheduler())
             .observeValues { days in
-                self.dataProvider.sections = [.init(models: days)]
+                self.dataProvider.sections = [.init(days)]
             }
     }
     

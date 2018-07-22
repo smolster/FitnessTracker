@@ -16,7 +16,7 @@ internal class IngredientObject: Object {
     
     @objc dynamic private var name: String = ""
     
-    private var macros: Macros {
+    private var macrosIn100g: MacroCount {
         get {
             return .init(
                 protein: .init(rawValue: proteinGrams),
@@ -32,15 +32,15 @@ internal class IngredientObject: Object {
         }
     }
     
-    convenience init(name: String, macros: Macros) {
+    convenience init(ingredient: Ingredient) {
         self.init()
-        self.name = name
-        self.macros = macros
+        self.name = ingredient.name
+        self.macrosIn100g = ingredient.macrosIn100g
     }
 }
 
 extension IngredientObject {
     func makeIngredient() -> Ingredient {
-        return .init(name: self.name, macros: self.macros)
+        return .init(name: self.name, macrosIn100g: self.macrosIn100g)
     }
 }

@@ -8,13 +8,19 @@
 
 import Foundation
 
-public struct Ingredient {
+public struct Ingredient: MacroCalculatable {
+    /// Name of ingredient.
     public let name: String
     
-    public let macros: Macros
+    /// Macros in 100 grams of ingredient.
+    public let macrosIn100g: MacroCount
     
-    public init(name: String, macros: Macros) {
+    public func macros(in gramsOfItem: Grams) -> MacroCount {
+        return macrosIn100g * (gramsOfItem.rawValue / 100)
+    }
+    
+    public init(name: String, macrosIn100g: MacroCount) {
         self.name = name
-        self.macros = macros
+        self.macrosIn100g = macrosIn100g
     }
 }

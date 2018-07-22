@@ -11,11 +11,11 @@ import Foundation
 public struct Day {
     public let date: Date
     public let totalCalories: Calories
-    public let totalMacros: Macros
+    public let totalMacros: MacroCount
     public let allMeals: [Meal]
     public let displayDate: (dateString: String, timeZone: TimeZone)
     
-    init(date: Date, totalCalories: Calories, totalMacros: Macros, allMeals: [Meal], displayDate: (String, TimeZone)) {
+    init(date: Date, totalCalories: Calories, totalMacros: MacroCount, allMeals: [Meal], displayDate: (String, TimeZone)) {
         self.date = date
         self.totalCalories = totalCalories
         self.totalMacros = totalMacros

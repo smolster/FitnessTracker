@@ -39,7 +39,7 @@ final class MealEntryViewModel: MealEntryViewModelInputs, MealEntryViewModelOutp
                 fatTextProperty.signal.mapNilToEmpty.mapToInt.mapNilToZero
             )
             .map { (Grams(rawValue: $0),  Grams(rawValue: $1), Grams(rawValue: $2)) }
-            .map(Macros.init)
+            .map(MacroCount.init)
         
         self.submitProperty.signal
             .withLatest(from: currentMacros)

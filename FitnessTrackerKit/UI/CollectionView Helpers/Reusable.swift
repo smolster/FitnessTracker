@@ -18,11 +18,11 @@ public protocol Reusable {
 }
 
 public extension Reusable where Self: UITableViewCell {
-    public static var reuseKind: ReuseKind { return .nib }
+    public static var reuseKind: ReuseKind { return .class }
 }
 
 public extension Reusable where Self: UICollectionViewCell {
-    public static var reuseKind: ReuseKind { return .nib }
+    public static var reuseKind: ReuseKind { return .class }
 }
 
 extension UITableViewCell: Reusable { }

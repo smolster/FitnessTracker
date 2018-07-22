@@ -25,6 +25,7 @@ final internal class RecipeEntryViewController: UITableViewController {
         case nameEntry
         case ingredient(Ingredient)
         case addIngredient
+        case done
         
         static var cellTypes: [UITableViewCell.Type] {
             return [IngredientCell.self]
@@ -32,15 +33,14 @@ final internal class RecipeEntryViewController: UITableViewController {
         
         var selectable: Bool {
             switch self {
-            case .nameEntry: return false
-            case .ingredient: return false
-            case .addIngredient: return true
+            case .nameEntry, .ingredient: return false
+            case .addIngredient, .done: return true
             }
         }
     }
     
     private lazy var dataProvider = TableDataProvider<CellModel>(
-        models: [.nameEntry, .addIngredient],
+        sections: [.init([.nameEntry, .addIngredient]), .init(.done)],
         cellCreationBlock: { [unowned self] tableView, cellModel, indexPath in
             switch cellModel {
             case .nameEntry:
@@ -62,12 +62,16 @@ final internal class RecipeEntryViewController: UITableViewController {
                 let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
                 cell.textLabel?.text = "Add Ingredient..."
                 return cell
+            case .done:
+                let cell =
+                return
             }
         },
         didSelectBlock: { [unowned self] _, dataProvider, cellModel, indexPath in
             switch cellModel {
             case .addIngredient:
                 return
+                
 //                dataProvider.insert(
 //                    [(.ingredient(.init(name: "Test")), IndexPath(row: indexPath.row, section: indexPath.section))],
 //                    on: tableView,
@@ -85,11 +89,4 @@ final internal class RecipeEntryViewController: UITableViewController {
         tableView.set(dataProvider: dataProvider)
     }
     
-}
-
-extension UITableView {
-    func set<T>(dataProvider: TableDataProvider<T>) {
-        self.dataSource = dataProvider
-        self.delegate = dataProvider
-    }
 }

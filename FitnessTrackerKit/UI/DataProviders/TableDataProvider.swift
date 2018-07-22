@@ -13,14 +13,14 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
     
     public typealias CellCreationBlock = (UITableView, Model, IndexPath) -> UITableViewCell
     public typealias PrefetchBlock = (UITableView, [Model]) -> Void
-    public typealias DidSelectBlock = (UITableView, TableDataProvider<Model>, Model, IndexPath) -> Void
+    public typealias SelectBlock = (UITableView, TableDataProvider<Model>, Model, IndexPath) -> Void
     
     public struct Section {
         var models: [Model]
         let headerString: String?
         let footerString: String?
         
-        public init(models: [Model], headerString: String? = nil, footerString: String? = nil) {
+        public init(_ models: [Model], headerString: String? = nil, footerString: String? = nil) {
             self.models = models
             self.headerString = headerString
             self.footerString = footerString
@@ -33,14 +33,16 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
     private let cellCreationBlock: CellCreationBlock
     private let prefetchBlock: PrefetchBlock?
     private let cancelPrefetchBlock: PrefetchBlock?
-    private let didSelectBlock: DidSelectBlock?
+    private let didSelectBlock: SelectBlock?
+    private let didDeselectBlock: SelectBlock?
     
     public convenience init<Cell: UITableViewCell>(
         models: [Model],
         cellType: Cell.Type,
         prefetchBlock: PrefetchBlock? = nil,
         cancelPrefetchBlock: PrefetchBlock? = nil,
-        didSelectBlock: DidSelectBlock? = nil
+        didSelectBlock: SelectBlock? = nil,
+        didDeselectBlock: SelectBlock? = nil
     ) where Cell: View, Cell.ViewModel == Model {
         self.init(
             models: models,
@@ -51,7 +53,8 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
             },
             prefetchBlock: prefetchBlock,
             cancelPrefetchBlock: cancelPrefetchBlock,
-            didSelectBlock: didSelectBlock
+            didSelectBlock: didSelectBlock,
+            didDeselectBlock: didDeselectBlock
         )
     }
     
@@ -60,14 +63,16 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
         cellCreationBlock: @escaping CellCreationBlock,
         prefetchBlock: PrefetchBlock? = nil,
         cancelPrefetchBlock: PrefetchBlock? = nil,
-        didSelectBlock: DidSelectBlock? = nil
+        didSelectBlock: SelectBlock? = nil,
+        didDeselectBlock: SelectBlock? = nil
     ) {
         self.init(
-            sections: [Section(models: models)],
+            sections: [Section(models)],
             cellCreationBlock: cellCreationBlock,
             prefetchBlock: prefetchBlock,
             cancelPrefetchBlock: cancelPrefetchBlock,
-            didSelectBlock: didSelectBlock
+            didSelectBlock: didSelectBlock,
+            didDeselectBlock: didDeselectBlock
         )
     }
     
@@ -76,13 +81,15 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
         cellCreationBlock: @escaping CellCreationBlock,
         prefetchBlock: PrefetchBlock? = nil,
         cancelPrefetchBlock: PrefetchBlock? = nil,
-        didSelectBlock: DidSelectBlock? = nil
+        didSelectBlock: SelectBlock? = nil,
+        didDeselectBlock: SelectBlock? = nil
     ) {
         self.sections = sections
         self.cellCreationBlock = cellCreationBlock
         self.prefetchBlock = prefetchBlock
         self.cancelPrefetchBlock = cancelPrefetchBlock
         self.didSelectBlock = didSelectBlock
+        self.didDeselectBlock = didDeselectBlock
         super.init()
     }
     
@@ -116,6 +123,10 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.didSelectBlock?(tableView, self, sections[indexPath.section].models[indexPath.row], indexPath)
     }
+    
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        self.didDeselectBlock?(tableView, self, sections[indexPath.section].models[indexPath.row], indexPath)
+    }
 }
 
 public extension TableDataProvider {
@@ -132,5 +143,12 @@ public extension TableDataProvider {
         
         // TODO: Optimize this insert--we shouldn't have to map over the entries again
         tableView.insertRows(at: descendingEntries.map { $0.1 }, with: animation)
+    }
+}
+
+public extension UITableView {
+    public func set<T>(dataProvider: TableDataProvider<T>) {
+        self.dataSource = dataProvider
+        self.delegate = dataProvider
     }
 }

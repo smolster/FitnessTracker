@@ -21,8 +21,6 @@ extension UIView {
 }
 
 final internal class TextEntryCell: UITableViewCell {
-    
-    static internal var reuseKind: ReuseKind { return .class }
 
     internal let leftLabel = UILabel()
     internal let textField = UITextField()

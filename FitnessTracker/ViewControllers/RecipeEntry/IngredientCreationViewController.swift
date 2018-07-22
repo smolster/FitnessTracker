@@ -31,8 +31,17 @@ final internal class IngredientCreationViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private lazy var dataProvider = TableDataProvider<CellModel>.init(
-        models: [.nameEntry, .proteinEntry, .carbsEntry, .fatEntry, .done],
+    private let doneButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Done", for: UIControlState())
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isEnabled = false
+        button.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        return button
+    }()
+    
+    private lazy var dataProvider = TableDataProvider<CellModel>(
+        sections: [.init([.nameEntry, .proteinEntry, .carbsEntry, .fatEntry]), .init([.done])],
         cellCreationBlock: { [unowned self] tableView, model, indexPath in
             func textEntryCell(leftText: String, keyboardType: UIKeyboardType, action: @escaping (String) -> Void) -> TextEntryCell {
                 let cell = TextEntryCell()
@@ -63,21 +72,23 @@ final internal class IngredientCreationViewController: UITableViewController {
                 })
             case .done:
                 let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-                cell.isUserInteractionEnabled = false
-                cell.textLabel?.text = "Done"
-                cell.textLabel?.textColor = UIColor.blue
-                self.viewModel.outputs.doneButtonEnabled
-                    .observe(on: UIScheduler())
-                    .observeValues { isEnabled in
-                        cell.isUserInteractionEnabled = isEnabled
-                    }
+                cell.selectionStyle = .none
+                
+                cell.contentView.addSubview(self.doneButton)
+                NSLayoutConstraint.activate([
+                    self.doneButton.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: padding(.large)),
+                    self.doneButton.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: padding(.large)),
+                    self.doneButton.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -padding(.large)),
+                    self.doneButton.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -padding(.large))
+                ])
+                
                 return cell
             }
         },
         didSelectBlock: { tableView, dataProvider, model, indexPath in
             switch model {
             case .done:
-                self.viewModel.inputs.donePressed()
+                self.doneButton.sendActions(for: .touchUpInside)
             default:
                 let cell = tableView.cellForRow(at: indexPath) as! TextEntryCell
                 cell.textField.becomeFirstResponder()
@@ -85,14 +96,26 @@ final internal class IngredientCreationViewController: UITableViewController {
             }
         }
     )
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.set(dataProvider: self.dataProvider)
+        
+        self.viewModel.outputs.doneButtonEnabled
+            .observeValues { isEnabled in
+                self.doneButton.isEnabled = isEnabled
+            }
         
         self.viewModel.outputs.dismiss
             .observe(on: UIScheduler())
             .observeValues {
                 self.dismiss(animated: true, completion: nil)
+            }
+        
+        self.doneButton.reactive
+            .touchUpControlEvent
+            .observeValues { _ in
+                self.viewModel.inputs.donePressed()
             }
     }
     

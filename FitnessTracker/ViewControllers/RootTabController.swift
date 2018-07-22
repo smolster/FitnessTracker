@@ -8,11 +8,14 @@
 
 import UIKit
 
-class RootTabController: UITabBarController {
+final internal class RootTabController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.viewControllers = [
-            IngredientCreationViewController()
+            UINavigationController(rootViewController: MealEntryViewController()),
+            UINavigationController(rootViewController: TodayViewController()),
+            UINavigationController(rootViewController: AllMealsViewController()),
+            UINavigationController(rootViewController: RecipeEntryViewController())
         ]
     }
 }

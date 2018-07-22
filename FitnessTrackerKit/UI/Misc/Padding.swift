@@ -9,6 +9,10 @@
 import UIKit
 
 public enum Padding {
+    
+    /// 0
+    case none
+    
     /// 5
     case small
     
@@ -23,10 +27,11 @@ public enum Padding {
     
     fileprivate var value: CGFloat {
         switch self {
-        case .small: return 5.0
-        case .medium: return 10.0
-        case .large: return 15.0
-        case .extraLarge: return 20.0
+        case .none:         return 0.0
+        case .small:        return 5.0
+        case .medium:       return 10.0
+        case .large:        return 15.0
+        case .extraLarge:   return 20.0
         }
     }
 }

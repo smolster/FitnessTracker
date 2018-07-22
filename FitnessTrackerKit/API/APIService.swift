@@ -12,42 +12,29 @@ import Realm
 import RealmSwift
 import Result
 
-func +(_ lhs: Macros, _ rhs: Macros) -> Macros {
-    return .init(
-        protein: lhs.protein + rhs.protein,
-        carbs: lhs.carbs + rhs.carbs,
-        fat: lhs.fat + rhs.fat
-    )
+/**
+ Dispatches the `action` on global `DispatchQueue`, using the default configuration.
+ 
+ - parameter action: The action to dispatch.
+ */
+private func randomBackgroundDispatch(_ action: @escaping () -> Void) {
+    DispatchQueue.global().async(execute: action)
 }
 
-private let backgroundQueue = DispatchQueue(label: "background")
-private func backgroundDispatch(_ block: @escaping () -> Void) {
-    backgroundQueue.async(execute: block)
-}
-
-
-public class APIService {
+public final class APIService: APIServiceType {
     
     public init() { }
     
-    private var realm: Realm {
-        if let realm = Thread.current.threadDictionary["realm"] as? Realm {
-            return realm
-        } else {
-            let realm = try! Realm()
-            Thread.current.threadDictionary["realm"] = realm
-            return realm
-        }
-    }
-    
     public func add(ingredient: Ingredient) -> SignalProducer<Void, NoError> {
-        return SignalProducer<Void, NoError> { signal, _ in
-            backgroundDispatch {
+        return .init { signal, _ in
+            dispatchToRealm { realm in
                 do {
-                    try self.realm.write {
-                        self.realm.add(IngredientObject(name: ingredient.name, macros: ingredient.macros))
+                    try realm.write {
+                        realm.add(IngredientObject(ingredient: ingredient))
                     }
-                    signal.sendAndComplete(with: ())
+                    randomBackgroundDispatch {
+                        signal.sendAndComplete(with: ())
+                    }
                 } catch {
                     
                 }
@@ -56,29 +43,27 @@ public class APIService {
     }
     
     public func getAllIngredients() -> SignalProducer<[Ingredient], NoError> {
-        return SignalProducer<[Ingredient], NoError> { signal, _ in
-            backgroundDispatch {
-                signal.sendAndComplete(with: self.realm.objects(IngredientObject.self).map { $0.makeIngredient() })
+        return .init { signal, _ in
+            dispatchToRealm { realm in
+                let ingredients: [Ingredient] = realm.objects(IngredientObject.self).map { $0.makeIngredient() }
+                randomBackgroundDispatch {
+                    signal.sendAndComplete(with: ingredients)
+                }
             }
         }
     }
     
     
-    public func addMealEntry(_ meal: Meal) -> SignalProducer<Void, NoError> {
-        return SignalProducer<Void, NoError> { signal, _ in
-            backgroundDispatch {
+    public func add(mealEntry: Meal) -> SignalProducer<Void, NoError> {
+        return .init { signal, _ in
+            dispatchToRealm { realm in
                 do {
-                    try self.realm.write {
-                        self.realm.add(
-                            MealObject(
-                                date: meal.entryDate,
-                                proteinGrams: meal.macros.protein.rawValue,
-                                fatGrams: meal.macros.fat.rawValue,
-                                carbGrams: meal.macros.carbs.rawValue
-                            )
-                        )
+                    try realm.write {
+                        realm.add(MealObject(meal: mealEntry))
                     }
-                    signal.sendAndComplete(with: ())
+                    randomBackgroundDispatch {
+                        signal.sendAndComplete(with: ())
+                    }
                 } catch {
                     
                 }
@@ -87,57 +72,60 @@ public class APIService {
     }
     
     public func getAllMealsByDay(in timeZone: TimeZone) -> SignalProducer<[Day], NoError> {
-        return SignalProducer<[Day], NoError> { signal, _ in
-            backgroundDispatch {
-                signal.sendAndComplete(with: days(from: self.realm.objects(MealObject.self), using: timeZone))
+        return .init { signal, _ in
+            dispatchToRealm { realm in
+                let days: [Day] = APIOptimizationFunctions.days(from: realm.objects(MealObject.self), using: timeZone)
+                randomBackgroundDispatch {
+                    signal.sendAndComplete(with: days)
+                }
             }
         }
     }
     
     public func getAllMealEntries() -> SignalProducer<[Meal], NoError> {
-        return SignalProducer<[Meal], NoError> { signal, _ in
-            backgroundDispatch {
-                signal.sendAndComplete(with: self.realm.objects(MealObject.self).map { $0.getMeal() })
+        return .init { signal, _ in
+            dispatchToRealm { realm in
+                let meals: [Meal] = realm.objects(MealObject.self).map { $0.makeMeal() }
+                randomBackgroundDispatch {
+                    signal.sendAndComplete(with: meals)
+                }
             }
         }
     }
-}
-
-internal func days<MealObjects: Sequence>(from mealObjects: MealObjects, using timeZone: TimeZone) -> [Day] where MealObjects.Element == MealObject {
-    return mealObjects
-        .reduce(into: [String: (date: Date, meals: [Meal])]()) { currentDict, mealObj in
-            let dateString = DateCacher.shared.string(from: mealObj.date, using: .mmDDYYYY(timeZone))
-            if currentDict[dateString] == nil {
-                currentDict[dateString] = (mealObj.date, [mealObj.getMeal()])
-            } else {
-                currentDict[dateString]!.1.append(mealObj.getMeal())
+    
+    public func add(recipe: Recipe) -> SignalProducer<Void, NoError> {
+        return .init { signal, _ in
+            dispatchToRealm { realm in
+                do {
+                    try realm.write {
+                        realm.add(RecipeObject(recipe: recipe))
+                    }
+                    randomBackgroundDispatch {
+                        signal.sendAndComplete(with: ())
+                    }
+                } catch {
+                    
+                }
             }
-            currentDict[dateString]!.1.sort(by: { $0.entryDate < $1.entryDate })
         }
-        .map { pair in
-            let (totalCals, totalMacros): (Calories, Macros) =
-                pair.value.meals.reduce((Calories.zero, Macros.zero)) { currentCalsAndMacros, meal in
-                    return (currentCalsAndMacros.0 + meal.calories, currentCalsAndMacros.1 + meal.macros)
+    }
+    
+    public func getAllRecipes() -> SignalProducer<[Recipe], NoError> {
+        return .init { signal, _ in
+            dispatchToRealm { realm in
+                let recipes: [Recipe] = realm.objects(RecipeObject.self).map { $0.makeRecipe() }
+                randomBackgroundDispatch {
+                    signal.sendAndComplete(with: recipes)
+                }
             }
-            return Day(date: pair.value.date, totalCalories: totalCals, totalMacros: totalMacros, allMeals: pair.value.meals, displayDate: (pair.key, timeZone))
         }
+    }
+    
 }
 
 extension Signal.Observer {
     func sendAndComplete(with value: Value) {
         send(value: value)
         sendCompleted()
-    }
-}
-
-private extension MealObject {
-    func getMeal() -> Meal {
-        return Meal(
-            entryDate: self.date,
-            macros: Macros(
-                protein: .init(rawValue: self.proteinGrams),
-                carbs: .init(rawValue: self.carbGrams),
-                fat: .init(rawValue: self.fatGrams))
-        )
     }
 }
