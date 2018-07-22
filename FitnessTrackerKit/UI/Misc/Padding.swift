@@ -39,3 +39,7 @@ public enum Padding {
 public func padding(_ style: Padding) -> CGFloat {
     return style.value
 }
+
+public func translatesOff(for views: [UIView]) {
+    views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
+}

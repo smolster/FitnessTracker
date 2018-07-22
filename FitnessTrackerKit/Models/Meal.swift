@@ -22,6 +22,13 @@ public struct Meal {
             case .ingredient(let ingredient): return ingredient.macros(in: gramsOfItem)
             }
         }
+        
+        public var name: String {
+            switch self {
+            case .recipe(let recipe): return recipe.name
+            case .ingredient(let ingredient): return ingredient.name
+            }
+        }
     }
     
     public let entryDate: Date

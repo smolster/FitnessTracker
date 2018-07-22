@@ -13,7 +13,7 @@ final internal class RecipeEntryViewController: UITableViewController {
     
     private let viewModel: RecipeEntryViewModelType = RecipeEntryViewModel()
     
-    internal init() {
+    internal init(completion: @escaping (Recipe) -> Void) {
         super.init(style: .grouped)
     }
     
@@ -40,7 +40,7 @@ final internal class RecipeEntryViewController: UITableViewController {
     }
     
     private lazy var dataProvider = TableDataProvider<CellModel>(
-        sections: [.init([.nameEntry, .addIngredient]), .init(.done)],
+        sections: [.init([.nameEntry, .addIngredient]), .init([.done])],
         cellCreationBlock: { [unowned self] tableView, cellModel, indexPath in
             switch cellModel {
             case .nameEntry:
@@ -63,8 +63,7 @@ final internal class RecipeEntryViewController: UITableViewController {
                 cell.textLabel?.text = "Add Ingredient..."
                 return cell
             case .done:
-                let cell =
-                return
+                return UITableViewCell()
             }
         },
         didSelectBlock: { [unowned self] _, dataProvider, cellModel, indexPath in

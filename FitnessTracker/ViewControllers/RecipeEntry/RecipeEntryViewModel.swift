@@ -11,7 +11,9 @@ import FitnessTrackerKit
 import ReactiveSwift
 
 internal protocol RecipeEntryViewModelInputs {
+//    func ingredientAdded(_ ingredient: Ingredient)
     func nameUpdated(to newName: String)
+    func donePressed()
 }
 
 internal protocol RecipeEntryViewModelOutputs {
@@ -30,6 +32,11 @@ internal final class RecipeEntryViewModel: RecipeEntryViewModelType, RecipeEntry
     let nameTextProperty = MutableProperty<String>("")
     func nameUpdated(to newName: String) {
         nameTextProperty.value = ""
+    }
+    
+    let donePressedProperty = MutableProperty<Void>(())
+    func donePressed() {
+        self.donePressedProperty.value = ()
     }
     
     // MARK: - Outputs

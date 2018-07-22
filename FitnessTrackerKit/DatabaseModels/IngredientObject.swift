@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-internal class IngredientObject: Object {
+internal class IngredientObject: MealObjectComponent {
     @objc dynamic private var proteinGrams: Int = 0
     @objc dynamic private var carbsGrams: Int = 0
     @objc dynamic private var fatGrams: Int = 0
@@ -32,15 +32,17 @@ internal class IngredientObject: Object {
         }
     }
     
-    convenience init(ingredient: Ingredient) {
+    internal convenience init(ingredient: Ingredient) {
         self.init()
         self.name = ingredient.name
         self.macrosIn100g = ingredient.macrosIn100g
     }
+    
+    internal func makeIngredient() -> Ingredient {
+        return .init(name: self.name, macrosIn100g: self.macrosIn100g)
+    }
 }
 
 extension IngredientObject {
-    func makeIngredient() -> Ingredient {
-        return .init(name: self.name, macrosIn100g: self.macrosIn100g)
-    }
+    
 }

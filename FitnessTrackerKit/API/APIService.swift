@@ -122,10 +122,3 @@ public final class APIService: APIServiceType {
     }
     
 }
-
-extension Signal.Observer {
-    func sendAndComplete(with value: Value) {
-        send(value: value)
-        sendCompleted()
-    }
-}

@@ -43,8 +43,6 @@ internal final class IngredientCreationViewModel: IngredientCreationViewModelTyp
                 $0.0 != nil && $0.1 != nil && $0.2 != nil && ($0.3 != nil && $0.3 != "")
             }
         
-        self.dismiss = dismissProperty.signal
-        
         let latestIngredient = Signal.combineLatest(
                 proteinGramsProperty.signal,
                 carbsGramsProperty.signal,
@@ -56,13 +54,11 @@ internal final class IngredientCreationViewModel: IngredientCreationViewModelTyp
             .map { ($1, $0) }
             .map(Ingredient.init)
         
-        donePressedProperty.signal
+        self.dismiss = donePressedProperty
+            .signal
             .withJustLatest(from: latestIngredient)
-            .observeValues { ingredient in
+            .flatMap(.latest) { ingredient in
                 service.add(ingredient: ingredient)
-                    .startWithValues {
-                        self.dismissProperty.value = ()
-                    }
             }
     }
     
@@ -97,7 +93,6 @@ internal final class IngredientCreationViewModel: IngredientCreationViewModelTyp
     
     let doneButtonEnabled: Signal<Bool, NoError>
     
-    private let dismissProperty = MutableProperty<Void>(())
     let dismiss: Signal<Void, NoError>
     
     var inputs: IngredientCreationViewModelInputs { return self }
@@ -107,10 +102,4 @@ internal final class IngredientCreationViewModel: IngredientCreationViewModelTyp
 private func makeGrams(from optInteger: Int?) -> Grams? {
     guard let integer = optInteger else { return nil }
     return .init(rawValue: integer)
-}
-
-extension Signal {
-    func withJustLatest<T>(from signal: Signal<T, NoError>) -> Signal<T, Error> {
-        return self.withLatest(from: signal).map { $0.1 }
-    }
 }
