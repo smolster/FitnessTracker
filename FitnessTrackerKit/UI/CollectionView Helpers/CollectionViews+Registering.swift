@@ -17,9 +17,14 @@ public extension UICollectionView {
      - parameter cellTypes: The types to register
      */
     public func register(_ cellTypes: [UICollectionViewCell.Type]) {
-        for type in cellTypes where self.registeredCellIdentifiers.contains(type.reuseIdentifier) == false {
-            let nib = UINib(nibName: type.nibName, bundle: Bundle(for: type))
-            self.setValue(self.registeredCellIdentifiers + [type.reuseIdentifier], forUndefinedKey: "registeredCellIdentifiers")
+        for type in cellTypes {
+            switch type.reuseKind {
+            case .nib:
+                let nib = UINib(nibName: type.nibName, bundle: Bundle(for: type))
+                self.register(nib, forCellWithReuseIdentifier: type.reuseIdentifier)
+            case .class:
+                self.register(type, forCellWithReuseIdentifier: type.reuseIdentifier)
+            }
         }
     }
     
@@ -32,10 +37,6 @@ public extension UICollectionView {
     public func dequeueReusableCell<C: UICollectionViewCell>(withType type: C.Type, for indexPath: IndexPath) -> C {
         return self.dequeueReusableCell(withReuseIdentifier: type.reuseIdentifier, for: indexPath) as! C
     }
-    
-    public var registeredCellIdentifiers: [String] {
-        return self.value(forUndefinedKey: "registeredCellIdentifiers") as! [String]
-    }
 }
 
 public extension UITableView {
@@ -47,10 +48,14 @@ public extension UITableView {
      - parameter cellTypes: The types to register
      */
     public func register(_ cellTypes: [UITableViewCell.Type]) {
-        for type in cellTypes where self.registeredCellIdentifiers.contains(type.reuseIdentifier) == false {
-            let nib = UINib(nibName: type.nibName, bundle: Bundle(for: type))
-            self.register(nib, forCellReuseIdentifier: type.reuseIdentifier)
-            self.setValue(self.registeredCellIdentifiers + [type.reuseIdentifier], forUndefinedKey: "registeredCellIdentifiers")
+        for type in cellTypes {
+            switch type.reuseKind {
+            case .nib:
+                let nib = UINib(nibName: type.nibName, bundle: Bundle(for: type))
+                self.register(nib, forCellReuseIdentifier: type.reuseIdentifier)
+            case .class:
+                self.register(type, forCellReuseIdentifier: type.reuseIdentifier)
+            }
         }
     }
     
@@ -62,9 +67,5 @@ public extension UITableView {
      */
     public func dequeueReusableCell<C: UITableViewCell>(withType type: C.Type, for indexPath: IndexPath) -> C {
         return self.dequeueReusableCell(withIdentifier: type.reuseIdentifier, for: indexPath) as! C
-    }
-    
-    public var registeredCellIdentifiers: [String] {
-        return self.value(forUndefinedKey: "registeredCellIdentifiers") as! [String]
     }
 }

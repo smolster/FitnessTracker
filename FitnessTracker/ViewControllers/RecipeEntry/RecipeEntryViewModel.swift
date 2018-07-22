@@ -11,7 +11,7 @@ import FitnessTrackerKit
 import ReactiveSwift
 
 internal protocol RecipeEntryViewModelInputs {
-    
+    func nameUpdated(to newName: String)
 }
 
 internal protocol RecipeEntryViewModelOutputs {
@@ -26,6 +26,11 @@ internal protocol RecipeEntryViewModelType {
 internal final class RecipeEntryViewModel: RecipeEntryViewModelType, RecipeEntryViewModelInputs, RecipeEntryViewModelOutputs {
     
     // MARK: - Inputs
+    
+    let nameTextProperty = MutableProperty<String>("")
+    func nameUpdated(to newName: String) {
+        nameTextProperty.value = ""
+    }
     
     // MARK: - Outputs
     

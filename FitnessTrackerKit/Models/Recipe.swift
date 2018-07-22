@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+public struct Recipe {
+    public let name: String
+    public let caloriesPerGram: Calories? = nil
+}

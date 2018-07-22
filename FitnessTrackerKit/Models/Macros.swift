@@ -8,10 +8,16 @@
 
 import Foundation
 
-public struct Macros: Codable {
+public struct Macros {
     var protein: Grams
     var carbs: Grams
     var fat: Grams
+    
+    public init(protein: Grams, carbs: Grams, fat: Grams) {
+        self.protein = protein
+        self.carbs = carbs
+        self.fat = fat
+    }
     
     static var zero: Macros {
         return .init(protein: 0, carbs: 0, fat: 0)

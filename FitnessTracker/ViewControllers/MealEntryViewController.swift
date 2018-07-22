@@ -7,29 +7,66 @@
 //
 
 import UIKit
+import FitnessTrackerKit
+import ReactiveSwift
+import ReactiveCocoa
+import Result
+
+extension Reactive where Base: UIButton {
+    var touchUpControlEvent: Signal<Base, NoError> {
+        return self.controlEvents(.touchUpInside)
+    }
+}
+
+extension Signal where Value == String? {
+    var mapNilToEmpty: Signal<String, Error> {
+        return self.map { $0 ?? "" }
+    }
+}
+
+extension Signal where Value == String {
+    var mapToInt: Signal<Int?, Error> {
+        return self.map { Int($0) }
+    }
+}
+
+extension Signal where Value == Int? {
+    var mapNilToZero: Signal<Int, Error> {
+        return self.map { $0 ?? 0 }
+    }
+}
 
 class MealEntryViewController: UIViewController {
+    
+    let (lifetime, token) = Lifetime.make()
+    
+    @IBOutlet private weak var submitButton: UIButton!
+    @IBOutlet private weak var proteinField: UITextField!
+    @IBOutlet private weak var carbsField: UITextField!
+    @IBOutlet private weak var fatField: UITextField!
+    
+    let viewModel: MealEntryViewModelType = MealEntryViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        proteinField.reactive
+            .continuousTextValues
+            .observeValues(self.viewModel.inputs.proteinTextFieldChanged(_:))
+        
+        carbsField.reactive
+            .continuousTextValues
+            .observeValues(self.viewModel.inputs.carbsTextFieldChanged(_:))
+        
+        fatField.reactive
+            .continuousTextValues
+            .observeValues(self.viewModel.inputs.fatFieldTextChanged(_:))
+        
+        submitButton.reactive
+            .touchUpControlEvent
+            .observeValues { _ in
+                self.viewModel.inputs.submitPressed()
+            }
+        
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

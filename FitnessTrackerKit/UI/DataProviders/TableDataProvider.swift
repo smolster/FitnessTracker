@@ -9,12 +9,11 @@
 import Foundation
 import UIKit
 
-public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableViewDataSourcePrefetching {
+public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableViewDataSourcePrefetching, UITableViewDelegate {
     
     public typealias CellCreationBlock = (UITableView, Model, IndexPath) -> UITableViewCell
     public typealias PrefetchBlock = (UITableView, [Model]) -> Void
-    
-    private weak var tableView: UITableView!
+    public typealias DidSelectBlock = (UITableView, TableDataProvider<Model>, Model, IndexPath) -> Void
     
     public struct Section {
         var models: [Model]
@@ -28,65 +27,67 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
         }
     }
     
-    public var sections: [Section] {
-        didSet {
-            self.tableView.reloadRows(at: self.tableView.indexPathsForVisibleRows ?? [], with: .automatic)
-        }
-    }
-    fileprivate let cellCreationBlock: CellCreationBlock
     
-    fileprivate let prefetchBlock: PrefetchBlock?
-    fileprivate let cancelPrefetchBlock: PrefetchBlock?
+    public var sections: [Section]
+    
+    private let cellCreationBlock: CellCreationBlock
+    private let prefetchBlock: PrefetchBlock?
+    private let cancelPrefetchBlock: PrefetchBlock?
+    private let didSelectBlock: DidSelectBlock?
     
     public convenience init<Cell: UITableViewCell>(
-        tableView: UITableView,
         models: [Model],
         cellType: Cell.Type,
         prefetchBlock: PrefetchBlock? = nil,
-        cancelPrefetchBlock: PrefetchBlock? = nil
+        cancelPrefetchBlock: PrefetchBlock? = nil,
+        didSelectBlock: DidSelectBlock? = nil
     ) where Cell: View, Cell.ViewModel == Model {
         self.init(
-            for: tableView,
             models: models,
             cellCreationBlock: { tableView, model, indexPath in
                 let cell = tableView.dequeueReusableCell(withType: cellType, for: indexPath)
                 cell.configure(with: model)
                 return cell
-            }
+            },
+            prefetchBlock: prefetchBlock,
+            cancelPrefetchBlock: cancelPrefetchBlock,
+            didSelectBlock: didSelectBlock
         )
     }
     
     public convenience init(
-        for tableView: UITableView,
         models: [Model],
         cellCreationBlock: @escaping CellCreationBlock,
         prefetchBlock: PrefetchBlock? = nil,
-        cancelPrefetchBlock: PrefetchBlock? = nil
+        cancelPrefetchBlock: PrefetchBlock? = nil,
+        didSelectBlock: DidSelectBlock? = nil
     ) {
         self.init(
-            for: tableView,
             sections: [Section(models: models)],
             cellCreationBlock: cellCreationBlock,
             prefetchBlock: prefetchBlock,
-            cancelPrefetchBlock: cancelPrefetchBlock
+            cancelPrefetchBlock: cancelPrefetchBlock,
+            didSelectBlock: didSelectBlock
         )
     }
     
     public init(
-        for tableView: UITableView,
         sections: [Section],
         cellCreationBlock: @escaping CellCreationBlock,
         prefetchBlock: PrefetchBlock? = nil,
-        cancelPrefetchBlock: PrefetchBlock? = nil
+        cancelPrefetchBlock: PrefetchBlock? = nil,
+        didSelectBlock: DidSelectBlock? = nil
     ) {
-        self.tableView = tableView
         self.sections = sections
         self.cellCreationBlock = cellCreationBlock
         self.prefetchBlock = prefetchBlock
         self.cancelPrefetchBlock = cancelPrefetchBlock
+        self.didSelectBlock = didSelectBlock
+        super.init()
     }
     
     public func numberOfSections(in tableView: UITableView) -> Int {
+        if sections.isEmpty { return 0 }
         return sections.count
     }
     
@@ -95,7 +96,6 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        self.tableView = tableView
         return cellCreationBlock(tableView, sections[indexPath.section].models[indexPath.row], indexPath)
     }
     
@@ -109,5 +109,28 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
     
     private func models(withIndexPaths indexPaths: [IndexPath]) -> [Model] {
         return indexPaths.map({ sections[$0.section].models[$0.item] })
+    }
+    
+    // MARK: - UITableViewDelegate
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.didSelectBlock?(tableView, self, sections[indexPath.section].models[indexPath.row], indexPath)
+    }
+}
+
+public extension TableDataProvider {
+    public func insert(_ entries: [(model: Model, indexPath: IndexPath)], on tableView: UITableView, with animation: UITableViewRowAnimation = .automatic) {
+        let descendingEntries = entries.sorted(by: { lhs, rhs in
+            if lhs.indexPath.section == rhs.indexPath.section {
+                return lhs.indexPath.row > rhs.indexPath.row
+            }
+            return lhs.indexPath.section > rhs.indexPath.section
+        })
+        for (model, indexPath) in descendingEntries {
+            self.sections[indexPath.section].models.insert(model, at: indexPath.row)
+        }
+        
+        // TODO: Optimize this insert--we shouldn't have to map over the entries again
+        tableView.insertRows(at: descendingEntries.map { $0.1 }, with: animation)
     }
 }

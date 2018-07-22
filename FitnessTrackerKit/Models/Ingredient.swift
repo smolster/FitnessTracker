@@ -9,5 +9,12 @@
 import Foundation
 
 public struct Ingredient {
+    public let name: String
     
+    public let macros: Macros
+    
+    public init(name: String, macros: Macros) {
+        self.name = name
+        self.macros = macros
+    }
 }

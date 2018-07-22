@@ -14,3 +14,7 @@ public typealias Grams = SimpleTag<GramsTag, Int>
 public func +(_ lhs: Grams, _ rhs: Grams) -> Grams {
     return .init(rawValue: lhs.rawValue + rhs.rawValue)
 }
+
+public extension Tag where Tagged == GramsTag {
+    public static var zero: Grams { return 0 }
+}

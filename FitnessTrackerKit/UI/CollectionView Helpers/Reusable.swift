@@ -6,4 +6,24 @@
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+public enum ReuseKind {
+    case nib
+    case `class`
+}
+
+public protocol Reusable {
+    static var reuseKind: ReuseKind { get }
+}
+
+public extension Reusable where Self: UITableViewCell {
+    public static var reuseKind: ReuseKind { return .nib }
+}
+
+public extension Reusable where Self: UICollectionViewCell {
+    public static var reuseKind: ReuseKind { return .nib }
+}
+
+extension UITableViewCell: Reusable { }
+extension UICollectionViewCell: Reusable { }

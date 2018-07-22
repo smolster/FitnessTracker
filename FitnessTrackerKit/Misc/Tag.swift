@@ -14,6 +14,10 @@ public typealias SimpleTag<Tagged, RawValue> = Tag<Tagged, RawValue, Void>
 /// Use for things like IDs associated with types. Provide a `Discriminator` type to differentiate Tags with the same `Tagged` and `RawValue`
 public struct Tag<Tagged, RawValue, Discriminator> {
     public let rawValue: RawValue
+    
+    public init(rawValue: RawValue) {
+        self.rawValue = rawValue
+    }
 }
 
 extension Tag: Equatable where RawValue: Equatable {

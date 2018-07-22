@@ -11,26 +11,31 @@ import XCTest
 
 class FitnessTrackerKitTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+    let tableView = UITableView(frame: UIScreen.main.bounds, style: .plain)
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
+    func testDataProviderUpdating() {
+        let provider = TableDataProvider<Int>(
+            for: tableView,
+            models: [],
+            cellCreationBlock: { (tableView, integer, indexPath) -> UITableViewCell in
+                let cell = UITableViewCell()
+                cell.tag = integer
+                return cell
+            }
+        )
+        
+        tableView.reloadData()
+        
+        XCTAssert(provider.numberOfSections(in: tableView) == 1, "Should be zero sections")
+        
+        XCTAssert(provider.tableView(tableView, numberOfRowsInSection: 0) == 0, "Should be zero rows")
+        
+        provider.sections = [.init(models: [1, 2, 3])]
+        
+        let newlyVisibleCells = tableView.visibleCells
+        XCTAssert(newlyVisibleCells.count == 3, "Should be 3 cells visible now.")
+        
+        XCTAssert(provider.numberOfSections(in: tableView) == 1, "Should be one section now.")
+        XCTAssert(provider.tableView(tableView, numberOfRowsInSection: 0) == 3, "Should be three rows now.")
     }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
 }

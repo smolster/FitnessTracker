@@ -20,8 +20,9 @@ func +(_ lhs: Macros, _ rhs: Macros) -> Macros {
     )
 }
 
+private let backgroundQueue = DispatchQueue(label: "background")
 private func backgroundDispatch(_ block: @escaping () -> Void) {
-    DispatchQueue(label: "background").async(execute: block)
+    backgroundQueue.async(execute: block)
 }
 
 
@@ -38,6 +39,30 @@ public class APIService {
             return realm
         }
     }
+    
+    public func add(ingredient: Ingredient) -> SignalProducer<Void, NoError> {
+        return SignalProducer<Void, NoError> { signal, _ in
+            backgroundDispatch {
+                do {
+                    try self.realm.write {
+                        self.realm.add(IngredientObject(name: ingredient.name, macros: ingredient.macros))
+                    }
+                    signal.sendAndComplete(with: ())
+                } catch {
+                    
+                }
+            }
+        }
+    }
+    
+    public func getAllIngredients() -> SignalProducer<[Ingredient], NoError> {
+        return SignalProducer<[Ingredient], NoError> { signal, _ in
+            backgroundDispatch {
+                signal.sendAndComplete(with: self.realm.objects(IngredientObject.self).map { $0.makeIngredient() })
+            }
+        }
+    }
+    
     
     public func addMealEntry(_ meal: Meal) -> SignalProducer<Void, NoError> {
         return SignalProducer<Void, NoError> { signal, _ in
@@ -94,8 +119,8 @@ internal func days<MealObjects: Sequence>(from mealObjects: MealObjects, using t
                 pair.value.meals.reduce((Calories.zero, Macros.zero)) { currentCalsAndMacros, meal in
                     return (currentCalsAndMacros.0 + meal.calories, currentCalsAndMacros.1 + meal.macros)
             }
-            return Day(date: pair.value.date, totalCalories: totalCals, totalMacros: totalMacros, allMeals: pair.value.meals)
-    }
+            return Day(date: pair.value.date, totalCalories: totalCals, totalMacros: totalMacros, allMeals: pair.value.meals, displayDate: (pair.key, timeZone))
+        }
 }
 
 extension Signal.Observer {
