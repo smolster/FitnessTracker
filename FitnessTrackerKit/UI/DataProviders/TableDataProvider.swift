@@ -17,8 +17,8 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
     
     public struct Section {
         var models: [Model]
-        let headerString: String?
-        let footerString: String?
+        public let headerString: String?
+        public let footerString: String?
         
         public init(_ models: [Model], headerString: String? = nil, footerString: String? = nil) {
             self.models = models
@@ -26,7 +26,6 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
             self.footerString = footerString
         }
     }
-    
     
     public var sections: [Section]
     
@@ -114,6 +113,14 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
         self.cancelPrefetchBlock?(tableView, models(withIndexPaths: indexPaths))
     }
     
+    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return self.sections[section].headerString
+    }
+    
+    public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return self.sections[section].footerString
+    }
+    
     private func models(withIndexPaths indexPaths: [IndexPath]) -> [Model] {
         return indexPaths.map({ sections[$0.section].models[$0.item] })
     }
@@ -130,23 +137,45 @@ public class TableDataProvider<Model>: NSObject, UITableViewDataSource, UITableV
 }
 
 public extension TableDataProvider {
-    public func insert(_ entries: [(model: Model, indexPath: IndexPath)], on tableView: UITableView, with animation: UITableViewRowAnimation = .automatic) {
-        let descendingEntries = entries.sorted(by: { lhs, rhs in
+    
+    public func insert(sections: [(section: Section, index: Int)], on tableView: UITableView, with animation: UITableViewRowAnimation = .automatic) {
+        let descendingSections = sections.sorted(by: { $0.index > $1.index })
+        
+        let indexSet = descendingSections.reduce(into: IndexSet()) { result, entry in
+            result.insert(entry.index)
+            
+            // While we're at it, we can insert into the models.
+            self.sections.insert(entry.section, at: entry.index)
+        }
+        
+        tableView.insertSections(indexSet, with: animation)
+    }
+    
+    public func insert(models: [(model: Model, indexPath: IndexPath)], on tableView: UITableView, with animation: UITableViewRowAnimation = .automatic) {
+        let descendingEntries = models.sorted(by: { lhs, rhs in
             if lhs.indexPath.section == rhs.indexPath.section {
                 return lhs.indexPath.row > rhs.indexPath.row
             }
             return lhs.indexPath.section > rhs.indexPath.section
         })
-        for (model, indexPath) in descendingEntries {
-            self.sections[indexPath.section].models.insert(model, at: indexPath.row)
+        
+        let indexPaths = descendingEntries.reduce(into: [IndexPath]()) { result, modelAndIndexPath in
+            result.append(modelAndIndexPath.indexPath)
+            
+            // While we're at it, we can insert into the models
+            self.sections[modelAndIndexPath.indexPath.section].models.insert(modelAndIndexPath.model, at: modelAndIndexPath.indexPath.row)
         }
         
-        // TODO: Optimize this insert--we shouldn't have to map over the entries again
-        tableView.insertRows(at: descendingEntries.map { $0.1 }, with: animation)
+        tableView.insertRows(at: indexPaths, with: animation)
     }
 }
 
 public extension UITableView {
+    /**
+     Sets a `dataProvider` as the receiver's `dataSource` and `delegate`.
+     
+     - parameter dataProvider: The `TableDataProvider` to use.
+     */
     public func set<T>(dataProvider: TableDataProvider<T>) {
         self.dataSource = dataProvider
         self.delegate = dataProvider

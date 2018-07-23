@@ -11,24 +11,38 @@ import ReactiveSwift
 import Result
 
 internal protocol MealEntryViewModelInputs {
-    /// Call when the submit button is pressed
-    func donePressed()
     
-    func recipeChosen(_ recipe: Recipe)
-    func recipeAmountProvided(_ recipe: Recipe, amount: Grams)
+    /// Call when "Recipe" button is pressed.
+    func addRecipePressed()
     
+    /// Call when "Ingredient" button is pressed.
     func addIngredientPressed()
-    func ingredientChosen(_ newIngredient: Ingredient)
-    func ingredientAmountProvided(for ingredient: Ingredient, amount: Grams)
     
+    /// Call when a component has been chosen.
+    func componentChosen(_ component: Meal.Component)
+    
+    /// Call when an amount is provided for a component.
+    func componentAmountProvided(for component: Meal.Component, amount: Grams)
+    
+    /// Call when the submit button is pressed.
+    func donePressed()
 }
 
 internal protocol MealEntryViewModelOutputs {
     
-    var showAlertToGatherAmountForComponent: Signal<Meal.Component, NoError> { get }
-    var insertIngredient: Signal<(Ingredient, Grams), NoError> { get }
+    /// Emits when we should go to the ingredient selection page.
     var goToIngredientSelection: Signal<Void, NoError> { get }
     
+    /// Emits when we should go to the recipe selection page.
+    var goToRecipeSelection: Signal<Void, NoError> { get }
+    
+    /// Emits when we need to show an alert to gather a weight for a meal component.
+    var showAlertToGatherAmountForComponent: Signal<Meal.Component, NoError> { get }
+    
+    /// Emits when we need to insert a newly selected component into the view.
+    var insertComponent: Signal<Meal.ComponentAndAmount, NoError> { get }
+    
+    /// Emits when we should show a submission confirmation and clear the current entry.
     var showConfirmationAndClearFields: Signal<Void, NoError> { get }
 }
 
@@ -42,21 +56,17 @@ final class MealEntryViewModel: MealEntryViewModelInputs, MealEntryViewModelOutp
     init(service: APIService = APIService()) {
         self.goToIngredientSelection = addIngredientPressedProperty.signal
         
-        self.showAlertToGatherAmountForComponent = Signal<Meal.Component, NoError>
-            .merge(
-                ingredientChosenProperty.signal.skipNil().map { .ingredient($0) },
-                recipeChosenProperty.signal.skipNil().map { .recipe($0) }
-            )
+        self.goToRecipeSelection = addRecipePressedProperty.signal
         
-        self.insertIngredient = ingredientAmountProvidedProperty
+        self.showAlertToGatherAmountForComponent = componentChosenProperty.signal.skipNil()
+        
+        self.insertComponent = componentAmountProvidedProperty
             .signal
             .skipNil()
         
-        let currentComponentsAndAmounts = Signal<Meal.ComponentAndAmount, NoError>
-            .merge(
-                ingredientAmountProvidedProperty.signal.skipNil().map { (.ingredient($0.0), $0.1) },
-                recipeAmountProvidedProperty.signal.skipNil().map { (.recipe($0.0), $0.1) }
-            )
+        let currentComponentsAndAmounts = componentAmountProvidedProperty
+            .signal
+            .skipNil()
             .collect()
         
         self.showConfirmationAndClearFields = donePressedProperty
@@ -64,46 +74,45 @@ final class MealEntryViewModel: MealEntryViewModelInputs, MealEntryViewModelOutp
             .withJustLatest(from: currentComponentsAndAmounts)
             .map { Meal(entryDate: .init(), componentsAndAmounts: $0) }
             .flatMap(.latest, service.add(mealEntry:))
+        
     }
     
     // MARK: - Inputs
+    
+    private let addRecipePressedProperty = MutableProperty<Void>(())
+    internal func addRecipePressed() {
+        self.addRecipePressedProperty.value = ()
+    }
+    
+    private let addIngredientPressedProperty = MutableProperty<Void>(())
+    internal func addIngredientPressed() {
+        self.addIngredientPressedProperty.value = ()
+    }
+    
+    private let componentChosenProperty = MutableProperty<Meal.Component?>(nil)
+    internal func componentChosen(_ component: Meal.Component) {
+        self.componentChosenProperty.value = component
+    }
+    
+    private let componentAmountProvidedProperty = MutableProperty<Meal.ComponentAndAmount?>(nil)
+    internal func componentAmountProvided(for component: Meal.Component, amount: Grams) {
+        self.componentAmountProvidedProperty.value = (component, amount)
+    }
     
     private let donePressedProperty = MutableProperty<Void>(())
     internal func donePressed() {
         self.donePressedProperty.value = ()
     }
     
-    private let recipeChosenProperty = MutableProperty<Recipe?>(nil)
-    internal func recipeChosen(_ recipe: Recipe) {
-        self.recipeChosenProperty.value = recipe
-    }
-    
-    private let recipeAmountProvidedProperty = MutableProperty<(Recipe, Grams)?>(nil)
-    internal func recipeAmountProvided(_ recipe: Recipe, amount: Grams) {
-        self.recipeAmountProvidedProperty.value = (recipe, amount)
-    }
-    
-    private let ingredientChosenProperty = MutableProperty<Ingredient?>(nil)
-    func ingredientChosen(_ newIngredient: Ingredient) {
-        self.ingredientChosenProperty.value = newIngredient
-    }
-    
-    private let ingredientAmountProvidedProperty = MutableProperty<(Ingredient, Grams)?>(nil)
-    func ingredientAmountProvided(for ingredient: Ingredient, amount: Grams) {
-        self.ingredientAmountProvidedProperty.value = (ingredient, amount)
-    }
-    
-    private let addIngredientPressedProperty = MutableProperty<Void>(())
-    func addIngredientPressed() {
-        self.addIngredientPressedProperty.value = ()
-    }
-    
-    
     // MARK: - Outputs
     
     let goToIngredientSelection: Signal<Void, NoError>
-    let insertIngredient: Signal<(Ingredient, Grams), NoError>
+    
+    let goToRecipeSelection: Signal<Void, NoError>
+    
     let showAlertToGatherAmountForComponent: Signal<Meal.Component, NoError>
+    
+    let insertComponent: Signal<Meal.ComponentAndAmount, NoError>
     
     let showConfirmationAndClearFields: Signal<Void, NoError>
     

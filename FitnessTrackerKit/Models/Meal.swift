@@ -13,6 +13,11 @@ public struct Meal {
     public typealias ComponentAndAmount = (component: Component, amount: Grams)
     
     public enum Component: MacroCalculatable {
+        
+        public enum Kind {
+            case ingredient, recipe
+        }
+        
         case recipe(Recipe)
         case ingredient(Ingredient)
         
@@ -27,6 +32,13 @@ public struct Meal {
             switch self {
             case .recipe(let recipe): return recipe.name
             case .ingredient(let ingredient): return ingredient.name
+            }
+        }
+        
+        public var kind: Kind {
+            switch self {
+            case .recipe: return .recipe
+            case .ingredient: return .ingredient
             }
         }
     }

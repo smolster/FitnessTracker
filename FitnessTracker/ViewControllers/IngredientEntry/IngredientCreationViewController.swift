@@ -93,6 +93,7 @@ final internal class IngredientCreationViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "New Ingredient"
         self.tableView.set(dataProvider: self.dataProvider)
         
         self.viewModel.outputs.dismiss

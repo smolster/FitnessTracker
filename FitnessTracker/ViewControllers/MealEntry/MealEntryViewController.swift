@@ -35,7 +35,10 @@ class MealEntryViewController: UITableViewController {
     let viewModel: MealEntryViewModelType = MealEntryViewModel()
     
     private lazy var dataProvider = TableDataProvider<CellModel>(
-        sections: [.init([.addItem]), .init([.done])],
+        sections: [
+            .init([.addItem]),
+            .init([.done])
+        ],
         cellCreationBlock: { tableView, model, indexPath in
             switch model {
             case .item(let componentAndAmount):
@@ -64,6 +67,9 @@ class MealEntryViewController: UITableViewController {
                 actionSheet.addAction(UIAlertAction(title: "Ingredient", style: .default, handler: { _ in
                     self.viewModel.inputs.addIngredientPressed()
                 }))
+                actionSheet.addAction(UIAlertAction(title: "Recipe", style: .default, handler: { _ in
+                    self.viewModel.inputs.addRecipePressed()
+                }))
                 self.present(actionSheet, animated: true, completion: nil)
             case .done:
                 (tableView.cellForRow(at: indexPath) as! DoneButtonCell).doneButton.sendActions(for: .touchUpInside)
@@ -81,17 +87,23 @@ class MealEntryViewController: UITableViewController {
         self.tableView.allowsMultipleSelection = false
         
         self.viewModel.outputs.goToIngredientSelection
-            .observe(on: UIScheduler())
-            .observeValues { [unowned self] in self.navigationController?.pushViewController(IngredientSelectionViewController(self.viewModel.inputs.ingredientChosen), animated: true)
+            .observeOnUI()
+            .observeValues { [unowned self] in self.navigationController?.pushViewController(MealComponentSelectionViewController(kind: .ingredient, self.viewModel.inputs.componentChosen), animated: true)
+            }
+        
+        self.viewModel.outputs.goToRecipeSelection
+            .observeOnUI()
+            .observeValues { [unowned self] in
+                self.navigationController?.pushViewController(MealComponentSelectionViewController(kind: .recipe, self.viewModel.inputs.componentChosen), animated: true)
             }
         
         self.viewModel.outputs.showAlertToGatherAmountForComponent
             .observeOnUI()
-            .observeValues { ingredient in
-                let alert = UIAlertController(title: nil, message: "How much of this ingredient?", preferredStyle: .alert)
+            .observeValues { component in
+                let alert = UIAlertController(title: nil, message: "How many grams of this item?", preferredStyle: .alert)
                 let doneAction = UIAlertAction(title: "Done", style: .default, handler: { action in
-                    self.viewModel.inputs.ingredientAmountProvided(
-                        for: ingredient,
+                    self.viewModel.inputs.componentAmountProvided(
+                        for: component,
                         amount: .init(rawValue: Int(alert.textFields!.first!.text ?? "") ?? 0)
                     )
                     alert.dismiss(animated: true, completion: nil)
@@ -100,9 +112,7 @@ class MealEntryViewController: UITableViewController {
                 alert.addTextField(configurationHandler: { textField in
                     textField.keyboardType = .decimalPad
                     textField.reactive
-                        .continuousTextValues
-                        .mapNilToEmpty
-                        .mapToInt
+                        .continuousIntValues
                         .observeValues { integer in
                             doneAction.isEnabled = integer != nil
                         }
@@ -111,12 +121,43 @@ class MealEntryViewController: UITableViewController {
                 self.present(alert, animated: true, completion: nil)
             }
         
-        self.viewModel.outputs.insertIngredient
+        self.viewModel.outputs.insertComponent
             .observeOnUI()
-            .observeValues { ingredientAndAmount in
-                let item: Meal.ComponentAndAmount = (.ingredient(ingredientAndAmount.0), ingredientAndAmount.1)
-                self.dataProvider.insert([(.item(item), IndexPath(row: 0, section: 0))], on: self.tableView)
+            .observeValues { componentAndAmount in
+                let sectionIndex: Int
+                switch componentAndAmount.component {
+                case .ingredient: sectionIndex = 1
+                case .recipe: sectionIndex = 0
+                }
+                if self.dataProvider.sections[sectionIndex].headerString != componentAndAmount.component.kind.headerString {
+                    // Need to insert the whole section, always at 0
+                    self.dataProvider.insert(
+                        sections: [(
+                            .init([.item(componentAndAmount)], headerString: componentAndAmount.component.kind.headerString),
+                            0
+                        )],
+                        on: self.tableView
+                    )
+                } else {
+                    self.dataProvider.insert(
+                        models: [(
+                            .item(componentAndAmount),
+                            IndexPath(row: 0, section: sectionIndex)
+                        )],
+                        on: self.tableView
+                    )
+                }
             }
+        
     }
 
+}
+
+fileprivate extension Meal.Component.Kind {
+    fileprivate var headerString: String {
+        switch self {
+        case .ingredient: return "Ingredients"
+        case .recipe: return "Recipes"
+        }
+    }
 }
