@@ -7,15 +7,22 @@
 //
 
 import UIKit
+import FitnessTrackerKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+internal class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
+    private let window: UIWindow = {
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = NavigationManager.shared.rootTabController
+        return window
+    }()
 
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    internal func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        GlobalStyles.apply()
+        window.makeKeyAndVisible()
         return true
     }
 

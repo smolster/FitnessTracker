@@ -7,13 +7,12 @@
 //
 
 import UIKit
-import FitnessTrackerKit
 
-internal final class TwoLabelCell: UITableViewCell {
+public final class TwoLabelCell: UITableViewCell {
     private let leftLabel = UILabel.base()
     private let rightLabel = UILabel.base()
     
-    internal var leftText: String {
+    public var leftText: String {
         get {
             return leftLabel.text ?? ""
         }
@@ -22,7 +21,7 @@ internal final class TwoLabelCell: UITableViewCell {
         }
     }
     
-    internal var rightText: String {
+    public var rightText: String {
         get {
             return rightLabel.text ?? ""
         }
@@ -31,12 +30,12 @@ internal final class TwoLabelCell: UITableViewCell {
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -60,6 +59,7 @@ internal final class TwoLabelCell: UITableViewCell {
         
         leftLabel.setContentHuggingPriority(.required, for: .horizontal)
         
+        leftLabel.textAlignment = .left
         rightLabel.textAlignment = .right
     }
 }

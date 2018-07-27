@@ -1,6 +1,6 @@
 //
 //  NavigationManager.swift
-//  FitnessTracker
+//  FitnessTrackerReSwift
 //
 //  Created by Swain Molster on 7/23/18.
 //  Copyright © 2018 Swain Molster. All rights reserved.
@@ -18,9 +18,9 @@ final internal class NavigationManager {
     
     public static let shared = NavigationManager()
     
-    private var isInitialLoad = true
-    
     internal let rootTabController = RootTabController()
+    
+    private var isInitialLoad = true
     
     private var previousState: ViewState = store.state.viewState
     
@@ -106,19 +106,19 @@ final internal class NavigationManager {
         }
     }
     
-    /// Returns the `UINavigationController` wrapping the currently-presented view controller, if it exists
+    /// Returns the `UINavigationController` wrapping the currently-presented view controller, if it exists.
     fileprivate func modalNavigationController() -> UINavigationController? {
         let presentingViewController = self.topViewController(forTab: store.state.viewState.selectedTab)
         return presentingViewController.presentedViewController as? UINavigationController
     }
     
-    /// Returns the base `UINavigationController` associated with the tab
+    /// Returns the base `UINavigationController` associated with the tab.
     fileprivate func navigationController(forTab tab: ViewState.Tab) -> UINavigationController {
         let navigationVCs = rootTabController.viewControllers!.map({ $0 as? UINavigationController }).compactMap({ $0 })
         return navigationVCs[tab.index]
     }
     
-    /// Returns the `UIViewController` at the top of the `tab`'s stack
+    /// Returns the `UIViewController` at the top of the `tab`'s stack.
     fileprivate func topViewController(forTab tab: ViewState.Tab) -> UIViewController {
         let navigationVCs = rootTabController.viewControllers!.map({ $0 as? UINavigationController }).compactMap({ $0 })
         let navigationVC = navigationVCs[tab.index]
@@ -136,7 +136,7 @@ extension NavigationManager: StoreSubscriber {
                 strongSelf.render(viewState: state)
                 strongSelf.isInitialLoad = false
             } else {
-                for change in strongSelf.previousState.differences(to: state).ordered() {
+                for change in strongSelf.previousState.differences(to: state).orderedForRendering() {
                     strongSelf.applyChange(change, animated: true)
                 }
             }
@@ -148,7 +148,7 @@ extension NavigationManager: StoreSubscriber {
 
 fileprivate extension Array where Element == ViewState.Change {
     /// O(n^2) Sorts the array into the correct order for rendering. The first element should be rendered first, moving forward.
-    func ordered() -> [ViewState.Change] {
+    func orderedForRendering() -> [ViewState.Change] {
         return self.sorted(by: { $0.renderingImportance < $1.renderingImportance })
     }
 }

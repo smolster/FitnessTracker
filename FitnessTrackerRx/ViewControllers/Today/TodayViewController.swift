@@ -11,7 +11,7 @@ import FitnessTrackerKit
 import RxSwift
 import RxCocoa
 
-final internal class TodayViewController: UITableViewController {
+internal final class TodayViewController: UITableViewController {
     
     private let viewModel: TodayViewModelType = TodayViewModel()
     private let disposeBag = DisposeBag()

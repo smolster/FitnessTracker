@@ -13,8 +13,9 @@ final internal class RootTabController: UITabBarController {
         super.viewDidLoad()
         
         self.viewControllers = [
-            UINavigationController(rootViewController: TodayViewController(style: .grouped)),
-            UINavigationController(rootViewController: AllMealsViewController())
+            UINavigationController(),
+            UINavigationController(),
+            UINavigationController()
         ]
     }
 }

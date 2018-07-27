@@ -12,11 +12,11 @@ import ReSwift
 import RealmSwift
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+internal class AppDelegate: UIResponder, UIApplicationDelegate {
     
     static fileprivate(set) weak var shared: AppDelegate!
 
-    let window: UIWindow = {
+    internal let window: UIWindow = {
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = RootTabController()
         return window

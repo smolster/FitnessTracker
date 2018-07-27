@@ -1,36 +1,24 @@
 //
 //  TextEntryCell.swift
-//  FitnessTracker
+//  FitnessTrackerKit
 //
-//  Created by Swain Molster on 7/21/18.
+//  Created by Swain Molster on 7/27/18.
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
 import UIKit
-import FitnessTrackerKit
 
-extension UIView {
-    func addSubviews(_ subviews: [UIView], turnOffTranslatesAutoresizingMask: Bool? = nil) {
-        for subview in subviews {
-            self.addSubview(subview)
-            if turnOffTranslatesAutoresizingMask == true {
-                subview.translatesAutoresizingMaskIntoConstraints = false
-            }
-        }
-    }
-}
-
-final internal class TextEntryCell: UITableViewCell {
-
-    internal let leftLabel = UILabel()
-    internal let textField = UITextField()
+public final class TextEntryCell: UITableViewCell {
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    public let leftLabel = UILabel.base()
+    public let textField = UITextField()
+    
+    override public init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
@@ -56,7 +44,6 @@ final internal class TextEntryCell: UITableViewCell {
         leftLabel.font = .preferredFont(forTextStyle: .body)
         textField.font = .preferredFont(forTextStyle: .body)
         textField.borderStyle = .none
-        
     }
-
+    
 }

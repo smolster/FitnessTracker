@@ -1,6 +1,6 @@
 //
 //  UIViewController+Swizzling.swift
-//  FitnessTrackerKit
+//  FitnessTrackerReSwift
 //
 //  Created by Swain Molster on 7/23/18.
 //  Copyright © 2018 Swain Molster. All rights reserved.
@@ -57,7 +57,6 @@ extension UIViewController {
     
     @objc internal func my_viewWillAppear(animated: Bool) {
         self.my_viewWillAppear(animated: animated)
-        
     }
     
     @objc public func my_traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -79,9 +78,9 @@ extension UIViewController {
         }
     }
     
+    /// Called when the back button is pressed.
     @objc open func backButtonPressed() {
         
     }
-    
     
 }
