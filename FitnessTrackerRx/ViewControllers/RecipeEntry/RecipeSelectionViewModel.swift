@@ -8,7 +8,6 @@
 
 import Foundation
 import FitnessTrackerKit
-import ReactiveSwift
 import Result
 
 internal protocol RecipeSelectionViewModelInputs {

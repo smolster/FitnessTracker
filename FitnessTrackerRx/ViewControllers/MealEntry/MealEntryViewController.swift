@@ -8,7 +8,6 @@
 
 import UIKit
 import FitnessTrackerKit
-import ReactiveSwift
 import ReactiveCocoa
 import Result
 import RxSwift
@@ -37,7 +36,7 @@ class MealEntryViewController: UITableViewController {
     
     let viewModel: MealEntryViewModelType = MealEntryViewModel()
     
-    private lazy var dataProvider = TableDataProvider<CellModel>(
+    private lazy var dataProvider: CollectionDataProvider<CellModel> = .table(
         sections: [
             .init([.addItem]),
             .init([.done])

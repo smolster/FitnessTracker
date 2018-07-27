@@ -8,7 +8,6 @@
 
 import UIKit
 import ReactiveCocoa
-import ReactiveSwift
 import Result
 import FitnessTrackerKit
 import RxSwift

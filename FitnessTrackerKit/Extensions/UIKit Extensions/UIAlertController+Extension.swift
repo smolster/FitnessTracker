@@ -7,8 +7,7 @@
 //
 
 import UIKit
-import ReactiveCocoa
-import ReactiveSwift
+import RxCocoa
 
 public extension UIAlertController {
     public static func textEntry(
@@ -24,14 +23,10 @@ public extension UIAlertController {
         alertController.addAction(doneAction)
         
         alertController.addTextField { textField in
-            textField.reactive
-                .continuousTextValues
+            textField.rx
+                .text
                 .map { textIsValid($0 ?? "") }
-                .observe(on: UIScheduler())
-                .observeValues { [unowned doneAction] isValid in
-                    doneAction.isEnabled = isValid
-                }
-            
+                .bind(to: doneAction.rx.isEnabled)
         }
         
         return alertController

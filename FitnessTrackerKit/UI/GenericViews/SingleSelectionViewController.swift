@@ -19,7 +19,7 @@ final public class SingleSelectionViewController<Model>: UITableViewController {
     private let configureCell: CellConfigurationBlock
     private var currentSelectedIndex: Int?
     
-    private lazy var dataProvider = TableDataProvider<Model>(
+    private lazy var dataProvider: CollectionDataProvider<Model> = .table(
         models: self.models,
         cellCreationBlock: { [unowned self] tableView, model, indexPath in
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")!

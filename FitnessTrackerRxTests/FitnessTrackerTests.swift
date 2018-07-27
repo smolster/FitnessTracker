@@ -8,7 +8,6 @@
 
 import XCTest
 @testable import FitnessTracker
-import ReactiveSwift
 
 class FitnessTrackerTests: XCTestCase {
     
