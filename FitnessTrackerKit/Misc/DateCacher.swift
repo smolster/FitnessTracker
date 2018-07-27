@@ -9,24 +9,37 @@
 import Foundation
 
 public enum DateFormat: Hashable {
-    /// MM/dd/yyyy
-    case mmDDYYYY(TimeZone)
+    /// M/dd/yyyy
+    case mDDYYYY(TimeZone)
+    
+    /// h:mm a
+    case hMMA(TimeZone)
+    
+    /// M/dd/yyyy h:mm a
+    case dateTime(TimeZone)
     
     var formatString: String {
         switch self {
-        case .mmDDYYYY: return "MM/dd/yyyy"
+        case .mDDYYYY:  return "M/dd/yyyy"
+        case .hMMA:     return "h:mm a"
+        case .dateTime: return "M/dd/yyyy h:mm a"
+            
         }
     }
     
     var components: Set<Calendar.Component> {
         switch self {
-        case .mmDDYYYY: return [.day, .month, .year]
+        case .mDDYYYY:  return [.day, .month, .year]
+        case .hMMA:     return [.minute, .hour]
+        case .dateTime: return [.minute, .hour, .day, .month, .year]
         }
     }
     
     var timeZone: TimeZone {
         switch self {
-        case .mmDDYYYY(let timeZone): return timeZone
+        case .mDDYYYY(let timeZone):    return timeZone
+        case .hMMA(let timeZone):       return timeZone
+        case .dateTime(let timeZone):   return timeZone
         }
     }
 }

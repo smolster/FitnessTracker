@@ -29,6 +29,12 @@ public struct MacroCount {
     }
 }
 
+extension MacroCount: CustomStringConvertible {
+    public var description: String {
+        return "Protein: \(self.protein.rawValue)g | Carbs: \(self.carbs.rawValue)g | Fat: \(self.fat.rawValue)g"
+    }
+}
+
 public func *(_ lhs: MacroCount, _ rhs: Int) -> MacroCount {
     return .init(
         protein: .init(rawValue: lhs.protein.rawValue * rhs),

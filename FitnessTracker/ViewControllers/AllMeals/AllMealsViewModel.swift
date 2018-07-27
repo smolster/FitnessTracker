@@ -13,11 +13,15 @@ import RxSwift
 internal protocol AllMealsViewModelInputs {
     /// Called on viewWillAppear.
     func viewWillAppear()
+    
+    func selectedDay(_ day: Day)
 }
 
 internal protocol AllMealsViewModelOutputs {
     /// Outputs a signal when the days are loaded.
     var days: Observable<[Day]> { get }
+    
+    var showAlert: Observable<AlertStrings> { get }
 }
 
 internal protocol AllMealsViewModelType {
@@ -34,19 +38,43 @@ final internal class AllMealsViewModel: AllMealsViewModelType, AllMealsViewModel
         self.days = viewWillAppearProperty
             .asObservable()
             .flatMapLatest { service.rxGetAllMealsByDay(in: .current)}
+        
+        self.showAlert = selectedDaySubject
+            .asObservable()
+            .observeOn(SerialDispatchQueueScheduler(internalSerialQueueName: "date-formatting"))
+            .map { day in
+                return (
+                    day.displayDate.dateString,
+                    """
+                    Total Calories: \(day.totalCalories.rawValue)
+                    
+                    Total Macros:
+                    \(day.totalMacros)
+                    """
+                )
+            }
     }
-    
-    var inputs: AllMealsViewModelInputs { return self }
-    var outputs: AllMealsViewModelOutputs { return self }
     
     // MARK: - Inputs
     
     let viewWillAppearProperty = PublishSubject<Void>()
-    func viewWillAppear() {
+    internal func viewWillAppear() {
         viewWillAppearProperty.onNext(())
+    }
+    
+    let selectedDaySubject = PublishSubject<Day>()
+    internal func selectedDay(_ day: Day) {
+        selectedDaySubject.onNext(day)
     }
     
     // MARK: - Outputs
     
     let days: Observable<[Day]>
+    let showAlert: Observable<AlertStrings>
+    
+    // MARK: - Types
+    
+    var inputs: AllMealsViewModelInputs { return self }
+    var outputs: AllMealsViewModelOutputs { return self }
+    
 }

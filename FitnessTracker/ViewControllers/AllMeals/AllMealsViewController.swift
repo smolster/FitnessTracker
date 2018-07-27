@@ -28,27 +28,43 @@ internal final class AllMealsViewController: UITableViewController {
             return cell
         },
         didSelectBlock: { [unowned self] tableView, _, day, indexPath in
-            let msg = "Total Calories: \(day.totalCalories), Total Macros: \(day.totalMacros)"
-            let alert = UIAlertController(title: day.date.description, message: msg, preferredStyle: .alert)
-            self.present(alert, animated: true, completion: nil)
+            self.viewModel.inputs.selectedDay(day)
         }
     )
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewModel.inputs.viewWillAppear()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "All Meals"
         self.tableView.set(dataProvider: dataProvider)
+        
         self.viewModel.outputs.days
             .observeOnUI()
             .subscribe(onNext: { days in
                 self.dataProvider.sections = [.init(days)]
+                self.tableView.reloadData()
             })
             .disposed(by: disposeBag)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.viewModel.inputs.viewWillAppear()
+        
+        self.viewModel.outputs.showAlert
+            .observeOnUI()
+            .subscribe(onNext: { (title, message) in
+                self.showAlert(
+                    title: title,
+                    message: message,
+                    buttons: [
+                        .ok { [unowned self] _ in
+                            self.tableView.deselectSelectedRows(animated: false)
+                            self.presentedViewController?.dismiss(animated: true, completion: nil)
+                        }
+                    ]
+                )
+            })
+            .disposed(by: self.disposeBag)
     }
 
 }

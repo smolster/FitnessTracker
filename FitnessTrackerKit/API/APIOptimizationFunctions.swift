@@ -15,7 +15,7 @@ internal struct APIOptimizationFunctions {
     internal static func days<MealObjects: Sequence>(from mealObjects: MealObjects, using timeZone: TimeZone) -> [Day] where MealObjects.Element == MealObject {
         return mealObjects
             .reduce(into: [String: (date: Date, meals: [Meal])]()) { currentDict, mealObj in
-                let dateString = DateCacher.shared.string(from: mealObj.date, using: .mmDDYYYY(timeZone))
+                let dateString = DateCacher.shared.string(from: mealObj.date, using: .mDDYYYY(timeZone))
                 if currentDict[dateString] == nil {
                     currentDict[dateString] = (mealObj.date, [mealObj.makeMeal()])
                 } else {

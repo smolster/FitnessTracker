@@ -22,7 +22,7 @@ final internal class TodayViewController: UITableViewController {
         case totalCalories(Calories)
         case totalMacros(MacroCount)
         
-        case meal(Meal)
+        case meal(Meal, displayTime: String)
         
         case addMeal
         
@@ -43,11 +43,16 @@ final internal class TodayViewController: UITableViewController {
             case .totalMacros(let macros):
                 let cell = TwoLabelCell()
                 cell.leftText = "Macros:"
-                cell.rightText = "P: \(macros.protein.rawValue)\nC: \(macros.carbs.rawValue)\nF: \(macros.fat.rawValue)"
+                cell.rightText =
+                    """
+                    Protein: \(macros.protein.rawValue)g
+                    Carbs: \(macros.carbs.rawValue)g
+                    Fat: \(macros.fat.rawValue)g
+                    """
                 return cell
-            case .meal(let meal):
+            case .meal(let meal, let displayTime):
                 let cell = TwoLabelCell()
-                cell.leftText = meal.entryDate.description
+                cell.leftText = displayTime
                 return cell
             case .addMeal:
                 let cell = DoneButtonCell()
@@ -57,6 +62,15 @@ final internal class TodayViewController: UITableViewController {
                     .bind(onNext: self.viewModel.inputs.addEntryPressed)
                     .disposed(by: self.disposeBag)
                 return cell
+            }
+           
+        },
+        didSelectBlock: { [unowned self] tableView, dataProvider, model, indexPath in
+            switch model {
+            case .meal(let meal, _):
+                self.viewModel.inputs.selectedMeal(meal)
+            default:
+                return
             }
         }
     )
@@ -75,16 +89,17 @@ final internal class TodayViewController: UITableViewController {
         
         self.viewModel.outputs.today
             .observeOnUI()
-            .subscribe(onNext: { day in
-                if let day = day {
-                    self.dataProvider.sections = [
-                        .init([.totalCalories(day.totalCalories), .totalMacros(day.totalMacros)]),
-                        .init(day.allMeals.map(CellModel.meal)),
-                        .init([.addMeal])
-                    ]
-                } else {
+            .subscribe(onNext: { dayWithMealDisplayTimes in
+                guard let (day, mealsWithDisplayTimes) = dayWithMealDisplayTimes else {
                     self.dataProvider.sections = [.init([.addMeal])]
+                    return
                 }
+                
+                self.dataProvider.sections = [
+                    .init([.totalCalories(day.totalCalories), .totalMacros(day.totalMacros)], headerString: "Summary"),
+                    .init(mealsWithDisplayTimes.map(CellModel.meal), headerString: "Meals"),
+                    .init([.addMeal])
+                ]
                 
                 self.tableView.reloadData()
             })
@@ -96,6 +111,24 @@ final internal class TodayViewController: UITableViewController {
                 self.navigationController?.pushViewController(MealEntryViewController(), animated: true)
             })
             .disposed(by: self.disposeBag)
+        
+        self.viewModel.outputs.showAlertWithMessage
+            .observeOnUI()
+            .subscribe(onNext: { title, message in
+                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned self] _ in
+                    self.tableView.deselectSelectedRows(animated: false)
+                    alert.dismiss(animated: true, completion: nil)
+                }))
+                self.present(alert, animated: true, completion: nil)
+            })
+            .disposed(by: self.disposeBag)
     }
     
+}
+
+extension UITableView {
+    func deselectSelectedRows(animated: Bool) {
+        self.indexPathsForSelectedRows?.forEach { self.deselectRow(at: $0, animated: animated) }
+    }
 }
