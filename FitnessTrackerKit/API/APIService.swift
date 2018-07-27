@@ -9,7 +9,6 @@
 import Foundation
 import Realm
 import RealmSwift
-import RxSwift
 
 /**
  Dispatches the `action` on global `DispatchQueue`, using the default configuration.

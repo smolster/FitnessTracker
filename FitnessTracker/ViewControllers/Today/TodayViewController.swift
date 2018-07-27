@@ -14,21 +14,15 @@ import RxCocoa
 final internal class TodayViewController: UITableViewController {
     
     private let viewModel: TodayViewModelType = TodayViewModel()
-    
     private let disposeBag = DisposeBag()
     
-    private enum CellModel: TableCellTypesProviding {
-        
+    private enum CellModel {
         case totalCalories(Calories)
         case totalMacros(MacroCount)
         
         case meal(Meal, displayTime: String)
         
         case addMeal
-        
-        static var cellTypes: [UITableViewCell.Type] {
-            return []
-        }
     }
     
     private lazy var dataProvider = TableDataProvider<CellModel>(
@@ -125,10 +119,4 @@ final internal class TodayViewController: UITableViewController {
             .disposed(by: self.disposeBag)
     }
     
-}
-
-extension UITableView {
-    func deselectSelectedRows(animated: Bool) {
-        self.indexPathsForSelectedRows?.forEach { self.deselectRow(at: $0, animated: animated) }
-    }
 }

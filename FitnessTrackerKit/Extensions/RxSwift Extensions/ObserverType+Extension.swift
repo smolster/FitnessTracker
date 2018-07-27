@@ -6,6 +6,8 @@
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
+#if canImport(RxSwift)
+
 import RxSwift
 
 extension ObserverType {
@@ -14,3 +16,5 @@ extension ObserverType {
         self.onCompleted()
     }
 }
+
+#endif

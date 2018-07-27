@@ -7,6 +7,9 @@
 //
 
 import UIKit
+
+#if (canImport(RxSwift) && canImport(RxCocoa))
+
 import RxSwift
 import RxCocoa
 
@@ -25,3 +28,5 @@ public extension Reactive where Base: UITextField {
         return self.text.map { Int($0 ?? "") }
     }
 }
+
+#endif

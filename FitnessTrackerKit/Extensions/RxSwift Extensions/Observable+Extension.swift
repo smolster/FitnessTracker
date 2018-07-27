@@ -7,6 +7,9 @@
 //
 
 import Foundation
+
+#if canImport(RxSwift)
+
 import RxSwift
 
 public extension Observable where E == String? {
@@ -43,7 +46,6 @@ public extension Observable {
     }
 }
 
-
 extension Observable where Element: OptionalType {
     public func skipNil() -> Observable<Element.WrappedValue> {
         return self
@@ -51,3 +53,5 @@ extension Observable where Element: OptionalType {
             .map { $0.asOptional.unsafelyUnwrapped }
     }
 }
+
+#endif
