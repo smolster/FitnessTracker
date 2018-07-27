@@ -9,9 +9,9 @@
 import Foundation
 
 public struct MacroCount {
-    var protein: Grams
-    var carbs: Grams
-    var fat: Grams
+    public var protein: Grams
+    public var carbs: Grams
+    public var fat: Grams
     
     /// The calorie-count of this macro count
     public var calories: Calories {

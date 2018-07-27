@@ -22,4 +22,11 @@ public struct Day {
         self.allMeals = allMeals
         self.displayDate = displayDate
     }
+    
+    public var isToday: Bool {
+        let calendar = Calendar.current
+        let selfDateComponents = calendar.dateComponents([.day, .month, .year], from: self.date)
+        let todayComponents = calendar.dateComponents([.day, .month, .year], from: .init())
+        return selfDateComponents == todayComponents
+    }
 }

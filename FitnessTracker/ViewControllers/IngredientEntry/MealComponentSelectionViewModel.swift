@@ -8,8 +8,7 @@
 
 import Foundation
 import FitnessTrackerKit
-import ReactiveSwift
-import Result
+import RxSwift
 
 internal protocol MealComponentSelectionViewModelInputs {
     func viewWillAppear(with kind: Meal.Component.Kind)
@@ -18,9 +17,9 @@ internal protocol MealComponentSelectionViewModelInputs {
 }
 
 internal protocol MealComponentSelectionViewModelOutputs {
-    var components: Signal<[Meal.Component], NoError> { get }
-    var goToCreateNew: Signal<Meal.Component.Kind, NoError> { get }
-    var dismissIfPresented: Signal<Void, NoError> { get }
+    var components: Observable<[Meal.Component]> { get }
+    var goToCreateNew: Observable<Meal.Component.Kind> { get }
+    var dismissIfPresented: Observable<Void> { get }
 }
 
 internal protocol MealComponentSelectionViewModelType {
@@ -32,52 +31,54 @@ internal final class MealComponentSelectionViewModel: MealComponentSelectionView
     
     init(service: APIServiceType = APIService()) {
         
-        let kind = viewWillAppearProperty.signal.skipNil()
+        let kind = viewWillAppearProperty
+                .asObservable()
+                .skipNil()
         
         self.components = kind
-            .flatMap(.latest, { kind -> SignalProducer<[Meal.Component], NoError> in
+            .flatMapLatest { kind -> Observable<[Meal.Component]> in
                 switch kind {
                 case .ingredient:
-                    return service.getAllIngredients().map { $0.map { Meal.Component.ingredient($0) } }
+                    return service.rxAllIngredients().map { $0.map { Meal.Component.ingredient($0) } }
                 case .recipe:
-                    return service.getAllRecipes().map { $0.map { Meal.Component.recipe($0) }}
+                    return service.rxAllRecipes().map { $0.map { Meal.Component.recipe($0) } }
                 }
-            })
+            }
         
         self.goToCreateNew = self.createNewPressedProperty
-            .signal
-            .withJustLatest(from: kind)
+            .asObservable()
+            .withLatestFrom(kind)
         
         self.dismissIfPresented = componentSelectedProperty
-            .signal
+            .asObservable()
             .skipNil()
             .mapToVoid()
     }
     
     // MARK: - Inputs
     
-    private let viewWillAppearProperty = MutableProperty<Meal.Component.Kind?>(nil)
+    private let viewWillAppearProperty = PublishSubject<Meal.Component.Kind?>()
     internal func viewWillAppear(with kind: Meal.Component.Kind) {
-        self.viewWillAppearProperty.value = kind
+        self.viewWillAppearProperty.onNext(kind)
     }
     
-    private let createNewPressedProperty = MutableProperty<Void>(())
+    private let createNewPressedProperty = PublishSubject<Void>()
     internal func createNewPressed() {
-        self.createNewPressedProperty.value = ()
+        self.createNewPressedProperty.onNext(())
     }
     
-    private let componentSelectedProperty = MutableProperty<Meal.Component?>(nil)
+    private let componentSelectedProperty = PublishSubject<Meal.Component?>()
     internal func componentSelected(_ component: Meal.Component) {
-        self.componentSelectedProperty.value = component
+        self.componentSelectedProperty.onNext(component)
     }
     
     // MARK: - Outputs
     
-    let components: Signal<[Meal.Component], NoError>
+    let components: Observable<[Meal.Component]>
     
-    let goToCreateNew: Signal<Meal.Component.Kind, NoError>
+    let goToCreateNew: Observable<Meal.Component.Kind>
     
-    let dismissIfPresented: Signal<Void, NoError>
+    let dismissIfPresented: Observable<Void>
     
     var inputs: MealComponentSelectionViewModelInputs { return self }
     var outputs: MealComponentSelectionViewModelOutputs { return self }

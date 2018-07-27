@@ -7,22 +7,21 @@
 //
 
 import Foundation
-import ReactiveSwift
-import Result
+import RxSwift
 
-public protocol APIServiceType {
+public protocol APIServiceType: class {
     
-    func add(ingredient: Ingredient) -> SignalProducer<Void, NoError>
+    func addIngredient(name: String, macrosIn100g: MacroCount, completion: @escaping (Ingredient) -> Void)
     
-    func getAllIngredients() -> SignalProducer<[Ingredient], NoError>
+    func getAllIngredients(completion: @escaping ([Ingredient]) -> Void)
     
-    func add(mealEntry: Meal) -> SignalProducer<Void, NoError>
+    func addMeal(entryDate: Date, componentsAndAmounts: [Meal.ComponentAndAmount], completion: @escaping (Meal) -> Void)
     
-    func getAllMealsByDay(in timeZone: TimeZone) -> SignalProducer<[Day], NoError>
+    func getAllMealsByDay(in timeZone: TimeZone, completion: @escaping ([Day]) -> Void)
     
-    func getAllMealEntries() -> SignalProducer<[Meal], NoError>
+    func getAllMealEntries(completion: @escaping ([Meal]) -> Void)
     
-    func add(recipe: Recipe) -> SignalProducer<Void, NoError>
+    func addRecipe(name: String, ingredientsAndAmounts: [Recipe.IngredientAndAmount], completion: @escaping (Recipe) -> Void)
     
-    func getAllRecipes() -> SignalProducer<[Recipe], NoError>
+    func getAllRecipes(completion: @escaping ([Recipe]) -> Void)
 }

@@ -26,10 +26,12 @@ public extension UIAlertController {
         alertController.addTextField { textField in
             textField.reactive
                 .continuousTextValues
-                .mapNilToEmpty
-                .observeValues { [unowned doneAction] string in
-                    doneAction.isEnabled = textIsValid(string)
+                .map { textIsValid($0 ?? "") }
+                .observe(on: UIScheduler())
+                .observeValues { [unowned doneAction] isValid in
+                    doneAction.isEnabled = isValid
                 }
+            
         }
         
         return alertController

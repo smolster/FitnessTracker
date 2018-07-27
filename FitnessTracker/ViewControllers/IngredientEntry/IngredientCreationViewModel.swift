@@ -8,8 +8,7 @@
 
 import Foundation
 import FitnessTrackerKit
-import ReactiveSwift
-import Result
+import RxSwift
 
 internal protocol IngredientCreationViewModelInputs {
     func setName(_ name: String)
@@ -21,8 +20,8 @@ internal protocol IngredientCreationViewModelInputs {
 }
 
 internal protocol IngredientCreationViewModelOutputs {
-    var doneButtonEnabled: Signal<Bool, NoError> { get }
-    var dismiss: Signal<Void, NoError> { get }
+    var doneButtonEnabled: Observable<Bool> { get }
+    var dismiss: Observable<Ingredient> { get }
 }
 
 internal protocol IngredientCreationViewModelType {
@@ -33,67 +32,62 @@ internal protocol IngredientCreationViewModelType {
 internal final class IngredientCreationViewModel: IngredientCreationViewModelType, IngredientCreationViewModelInputs, IngredientCreationViewModelOutputs {
     
     init(service: APIService = APIService()) {
-        self.doneButtonEnabled = Signal.combineLatest(
-                proteinGramsProperty.signal,
-                carbsGramsProperty.signal,
-                fatGramsProperty.signal,
-                nameProperty.signal
+        self.doneButtonEnabled = Observable.combineLatest(
+                proteinGramsProperty.asObservable(),
+                carbsGramsProperty.asObservable(),
+                fatGramsProperty.asObservable(),
+                nameProperty.asObservable()
             )
             .map {
                 $0.0 != nil && $0.1 != nil && $0.2 != nil && ($0.3 != nil && $0.3 != "")
             }
         
-        let latestIngredient = Signal.combineLatest(
-                proteinGramsProperty.signal,
-                carbsGramsProperty.signal,
-                fatGramsProperty.signal
+        let latestNameAndMacros = Observable.combineLatest(
+                proteinGramsProperty.asObservable().map { $0 ?? .zero },
+                carbsGramsProperty.asObservable().map { $0 ?? .zero },
+                fatGramsProperty.asObservable().map { $0 ?? .zero }
             )
-            .map { ($0.0 ?? .zero, $0.1 ?? .zero, $0.2 ?? .zero) }
             .map(MacroCount.init)
-            .combineLatest(with: nameProperty.signal.skipNil())
-            .map { ($1, $0) }
-            .map(Ingredient.init)
+            .withLatestFrom(nameProperty.asObservable().skipNil(), resultSelector: { ($1, $0) })
         
         self.dismiss = donePressedProperty
-            .signal
-            .withJustLatest(from: latestIngredient)
-            .flatMap(.latest) { ingredient in
-                service.add(ingredient: ingredient)
-            }
+            .asObservable()
+            .withLatestFrom(latestNameAndMacros)
+            .flatMapLatest(service.rxAddIngredient(name:macrosIn100g:))
     }
     
     // MARK: - Inputs
     
-    private let nameProperty = MutableProperty<String?>(nil)
+    private let nameProperty = PublishSubject<String?>()
     internal func setName(_ name: String) {
-        self.nameProperty.value = name
+        self.nameProperty.onNext(name)
     }
     
-    private let proteinGramsProperty = MutableProperty<Grams?>(nil)
+    private let proteinGramsProperty = PublishSubject<Grams?>()
     internal func setProteinGrams(_ grams: Int?) {
-        self.proteinGramsProperty.value = makeGrams(from: grams)
+        self.proteinGramsProperty.onNext(makeGrams(from: grams))
     }
     
-    private let carbsGramsProperty = MutableProperty<Grams?>(nil)
+    private let carbsGramsProperty = PublishSubject<Grams?>()
     internal func setCarbsGrams(_ grams: Int?) {
-        self.carbsGramsProperty.value = makeGrams(from: grams)
+        self.carbsGramsProperty.onNext(makeGrams(from: grams))
     }
     
-    private let fatGramsProperty = MutableProperty<Grams?>(nil)
+    private let fatGramsProperty = PublishSubject<Grams?>()
     internal func setFatGrams(_ grams: Int?) {
-        self.fatGramsProperty.value = makeGrams(from: grams)
+        self.fatGramsProperty.onNext(makeGrams(from: grams))
     }
     
-    private let donePressedProperty = MutableProperty<Void>(())
+    private let donePressedProperty = PublishSubject<Void>()
     internal func donePressed() {
-        self.donePressedProperty.value = ()
+        self.donePressedProperty.onNext(())
     }
     
     // MARK: - Outputs
     
-    let doneButtonEnabled: Signal<Bool, NoError>
+    let doneButtonEnabled: Observable<Bool>
     
-    let dismiss: Signal<Void, NoError>
+    let dismiss: Observable<Ingredient>
     
     var inputs: IngredientCreationViewModelInputs { return self }
     var outputs: IngredientCreationViewModelOutputs { return self }

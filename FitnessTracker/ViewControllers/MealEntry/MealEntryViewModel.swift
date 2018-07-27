@@ -7,8 +7,7 @@
 //
 
 import FitnessTrackerKit
-import ReactiveSwift
-import Result
+import RxSwift
 
 internal protocol MealEntryViewModelInputs {
     
@@ -31,19 +30,19 @@ internal protocol MealEntryViewModelInputs {
 internal protocol MealEntryViewModelOutputs {
     
     /// Emits when we should go to the ingredient selection page.
-    var goToIngredientSelection: Signal<Void, NoError> { get }
+    var goToIngredientSelection: Observable<Void> { get }
     
     /// Emits when we should go to the recipe selection page.
-    var goToRecipeSelection: Signal<Void, NoError> { get }
+    var goToRecipeSelection: Observable<Void> { get }
     
     /// Emits when we need to show an alert to gather a weight for a meal component.
-    var showAlertToGatherAmountForComponent: Signal<Meal.Component, NoError> { get }
+    var showAlertToGatherAmountForComponent: Observable<Meal.Component> { get }
     
     /// Emits when we need to insert a newly selected component into the view.
-    var insertComponent: Signal<Meal.ComponentAndAmount, NoError> { get }
+    var insertComponent: Observable<Meal.ComponentAndAmount> { get }
     
-    /// Emits when we should show a submission confirmation and clear the current entry.
-    var showConfirmationAndClearFields: Signal<Void, NoError> { get }
+    /// Emits when we should pop the view controller.
+    var pop: Observable<Meal> { get }
 }
 
 internal protocol MealEntryViewModelType {
@@ -54,67 +53,70 @@ internal protocol MealEntryViewModelType {
 final class MealEntryViewModel: MealEntryViewModelInputs, MealEntryViewModelOutputs, MealEntryViewModelType {
     
     init(service: APIService = APIService()) {
-        self.goToIngredientSelection = addIngredientPressedProperty.signal
+        self.goToIngredientSelection = addIngredientPressedProperty.asObservable()
         
-        self.goToRecipeSelection = addRecipePressedProperty.signal
+        self.goToRecipeSelection = addRecipePressedProperty.asObservable()
         
-        self.showAlertToGatherAmountForComponent = componentChosenProperty.signal.skipNil()
+        self.showAlertToGatherAmountForComponent = componentChosenProperty.asObservable().skipNil()
         
         self.insertComponent = componentAmountProvidedProperty
-            .signal
+            .asObservable()
             .skipNil()
         
         let currentComponentsAndAmounts = componentAmountProvidedProperty
-            .signal
+            .asObservable()
             .skipNil()
-            .collect()
+            .scan([Meal.ComponentAndAmount](), accumulator: { array, new  in
+                return array + [new]
+            })
         
-        self.showConfirmationAndClearFields = donePressedProperty
-            .signal
-            .withJustLatest(from: currentComponentsAndAmounts)
-            .map { Meal(entryDate: .init(), componentsAndAmounts: $0) }
-            .flatMap(.latest, service.add(mealEntry:))
+        
+        self.pop = donePressedProperty
+            .asObservable()
+            .map { Date() }
+            .withLatestFrom(currentComponentsAndAmounts, resultSelector: { ($0, $1) })
+            .flatMapLatest(service.rxAddMeal(entryDate:componentsAndAmounts:))
         
     }
     
     // MARK: - Inputs
     
-    private let addRecipePressedProperty = MutableProperty<Void>(())
+    private let addRecipePressedProperty = PublishSubject<Void>()
     internal func addRecipePressed() {
-        self.addRecipePressedProperty.value = ()
+        self.addRecipePressedProperty.onNext(())
     }
     
-    private let addIngredientPressedProperty = MutableProperty<Void>(())
+    private let addIngredientPressedProperty = PublishSubject<Void>()
     internal func addIngredientPressed() {
-        self.addIngredientPressedProperty.value = ()
+        self.addIngredientPressedProperty.onNext(())
     }
     
-    private let componentChosenProperty = MutableProperty<Meal.Component?>(nil)
+    private let componentChosenProperty = PublishSubject<Meal.Component?>()
     internal func componentChosen(_ component: Meal.Component) {
-        self.componentChosenProperty.value = component
+        self.componentChosenProperty.onNext(component)
     }
     
-    private let componentAmountProvidedProperty = MutableProperty<Meal.ComponentAndAmount?>(nil)
+    private let componentAmountProvidedProperty = PublishSubject<Meal.ComponentAndAmount?>()
     internal func componentAmountProvided(for component: Meal.Component, amount: Grams) {
-        self.componentAmountProvidedProperty.value = (component, amount)
+        self.componentAmountProvidedProperty.onNext((component, amount))
     }
     
-    private let donePressedProperty = MutableProperty<Void>(())
+    private let donePressedProperty = PublishSubject<Void>()
     internal func donePressed() {
-        self.donePressedProperty.value = ()
+        self.donePressedProperty.onNext(())
     }
     
     // MARK: - Outputs
     
-    let goToIngredientSelection: Signal<Void, NoError>
+    let goToIngredientSelection: Observable<Void>
     
-    let goToRecipeSelection: Signal<Void, NoError>
+    let goToRecipeSelection: Observable<Void>
     
-    let showAlertToGatherAmountForComponent: Signal<Meal.Component, NoError>
+    let showAlertToGatherAmountForComponent: Observable<Meal.Component>
     
-    let insertComponent: Signal<Meal.ComponentAndAmount, NoError>
+    let insertComponent: Observable<Meal.ComponentAndAmount>
     
-    let showConfirmationAndClearFields: Signal<Void, NoError>
+    let pop: Observable<Meal>
     
     var inputs: MealEntryViewModelInputs { return self }
     var outputs: MealEntryViewModelOutputs { return self }

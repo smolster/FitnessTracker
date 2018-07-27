@@ -8,6 +8,9 @@ target 'FitnessTracker' do
   pod 'ReactiveSwift'
   pod 'ReactiveCocoa'
   pod 'Result'
+  pod 'ReSwift'
+  pod 'RxSwift'
+  pod 'RxCocoa'
 
   target 'FitnessTrackerTests' do
     inherit! :search_paths
@@ -24,6 +27,9 @@ target 'FitnessTrackerKit' do
     pod 'ReactiveSwift'
     pod 'ReactiveCocoa'
     pod 'Result'
+    pod 'ReSwift'
+    pod 'RxSwift'
+    pod 'RxCocoa'
     
     target 'FitnessTrackerKitTests' do
         inherit! :search_paths

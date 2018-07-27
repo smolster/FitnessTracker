@@ -11,9 +11,11 @@ import ReactiveCocoa
 import ReactiveSwift
 import Result
 import FitnessTrackerKit
+import RxSwift
 
 internal final class AllMealsViewController: UITableViewController {
     
+    let disposeBag = DisposeBag()
     private let viewModel: AllMealsViewModelType = AllMealsViewModel()
     
     private lazy var dataProvider = TableDataProvider<Day>(
@@ -37,10 +39,11 @@ internal final class AllMealsViewController: UITableViewController {
         self.title = "All Meals"
         self.tableView.set(dataProvider: dataProvider)
         self.viewModel.outputs.days
-            .observe(on: UIScheduler())
-            .observeValues { days in
+            .observeOnUI()
+            .subscribe(onNext: { days in
                 self.dataProvider.sections = [.init(days)]
-            }
+            })
+            .disposed(by: disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {

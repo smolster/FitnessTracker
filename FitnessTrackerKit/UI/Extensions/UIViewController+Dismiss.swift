@@ -10,10 +10,13 @@ import UIKit
 
 public extension UIViewController {
     public func dismissOrPop(animated: Bool = true) {
-        if self.isBeingPresented {
-            self.dismiss(animated: true, completion: nil)
-        } else if let navigationController = self.navigationController {
-            navigationController.popViewController(animated: true)
+        if let navigationController = self.navigationController {
+            if navigationController.viewControllers.first == self {
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                navigationController.popViewController(animated: animated)
+            }
         }
+        self.dismiss(animated: true, completion: nil)
     }
 }

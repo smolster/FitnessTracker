@@ -9,12 +9,19 @@
 import Foundation
 import RealmSwift
 
-internal class IngredientObject: MealObjectComponent {
+internal class IngredientObject: RealmSwift.Object {
+    
+    @objc dynamic private var id: String = UUID().uuidString
+    
     @objc dynamic private var proteinGrams: Int = 0
     @objc dynamic private var carbsGrams: Int = 0
     @objc dynamic private var fatGrams: Int = 0
     
     @objc dynamic private var name: String = ""
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
     
     private var macrosIn100g: MacroCount {
         get {
@@ -32,17 +39,14 @@ internal class IngredientObject: MealObjectComponent {
         }
     }
     
-    internal convenience init(ingredient: Ingredient) {
-        self.init()
-        self.name = ingredient.name
-        self.macrosIn100g = ingredient.macrosIn100g
+    public static func create(in realm: Realm, name: String, macros: MacroCount) -> IngredientObject {
+        let object = realm.create(IngredientObject.self)
+        object.name = name
+        object.macrosIn100g = macros
+        return object
     }
     
     internal func makeIngredient() -> Ingredient {
-        return .init(name: self.name, macrosIn100g: self.macrosIn100g)
+        return .init(id: .init(rawValue: self.id), name: self.name, macrosIn100g: self.macrosIn100g)
     }
-}
-
-extension IngredientObject {
-    
 }

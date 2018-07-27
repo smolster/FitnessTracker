@@ -8,13 +8,12 @@
 
 import UIKit
 import FitnessTrackerKit
-import ReactiveCocoa
-import ReactiveSwift
-import Result
+import RxSwift
 
 final internal class MealComponentSelectionViewController: UITableViewController {
     
     private let viewModel: MealComponentSelectionViewModelType = MealComponentSelectionViewModel()
+    let disposeBag = DisposeBag()
     
     enum CellModel: TableCellTypesProviding {
         case item(Meal.Component)
@@ -65,35 +64,39 @@ final internal class MealComponentSelectionViewController: UITableViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = kind == .recipe ? "Recipes" : "Ingredients"
         self.tableView.register(CellModel.cellTypes)
         self.tableView.allowsMultipleSelection = false
         self.tableView.set(dataProvider: self.dataProvider)
         
         self.viewModel.outputs.components
-            .observe(on: UIScheduler())
-            .observeValues { components in
+            .observeOnUI()
+            .subscribe(onNext: { components in
                 self.dataProvider.sections = components
-                .isEmpty ?
-                    [.init([.createNew])] :
+                    .isEmpty ?
+                        [.init([.createNew])] :
                     [.init(components.map { CellModel.item($0) }), .init([.createNew])]
                 self.tableView.reloadData()
-            }
+            })
+            .disposed(by: disposeBag)
         
         self.viewModel.outputs.goToCreateNew
-            .observe(on: UIScheduler())
-            .observeValues { kind in
+            .observeOnUI()
+            .subscribe(onNext: { kind in
                 self.present(kind.createNewViewController(), animated: true, completion: nil)
-            }
+            })
+            .disposed(by: disposeBag)
         
         self.viewModel.outputs.dismissIfPresented
-            .observe(on: UIScheduler())
-            .observeValues {
+            .observeOnUI()
+            .subscribe(onNext: {
                 if self.isBeingPresented {
                     self.dismiss(animated: true, completion: nil)
                 } else {
                     self.navigationController?.popViewController(animated: true)
                 }
-            }
+            })
+            .disposed(by: disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {

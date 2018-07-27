@@ -8,8 +8,7 @@
 
 import Foundation
 import FitnessTrackerKit
-import ReactiveSwift
-import Result
+import RxSwift
 
 internal protocol RecipeCreationViewModelInputs {
     func nameUpdated(to newName: String)
@@ -19,9 +18,9 @@ internal protocol RecipeCreationViewModelInputs {
 }
 
 internal protocol RecipeCreationViewModelOutputs {
-    var showAlertToGatherAmountOfIngredient: Signal<Ingredient, NoError> { get }
-    var doneButtonEnabled: Signal<Bool, NoError> { get }
-    var showConfirmationAndDismiss: Signal<Void, NoError> { get }
+    var showAlertToGatherAmountOfIngredient: Observable<Ingredient> { get }
+    var doneButtonEnabled: Observable<Bool> { get }
+    var showConfirmationAndDismiss: Observable<Recipe> { get }
 }
 
 internal protocol RecipeCreationViewModelType {
@@ -33,69 +32,59 @@ internal final class RecipeCreationViewModel: RecipeCreationViewModelType, Recip
     
     init(service: APIServiceType = APIService()) {
         self.showAlertToGatherAmountOfIngredient = ingredientSelectedProperty
-            .signal
+            .asObservable()
             .skipNil()
         
         let currentIngredientsAndAmounts = amountSelectedProperty
-            .signal
+            .asObservable()
             .skipNil()
-            .collect()
-            .logEvents()
+            .gather()
         
-        self.doneButtonEnabled = Signal
+        let currentNameAndIngredients = Observable
             .combineLatest(
-                nameTextProperty.signal,
+                nameTextProperty.asObservable(),
                 currentIngredientsAndAmounts
             )
+    
+        self.doneButtonEnabled = currentNameAndIngredients
             .map { $0.0.isNotEmpty && $0.1.isNotEmpty }
         
-        let currentRecipe = Signal
-            .combineLatest(
-                nameTextProperty.signal,
-                currentIngredientsAndAmounts
-            )
-            .map(Recipe.init)
-            .logEvents()
-        
         self.showConfirmationAndDismiss = self.donePressedProperty
-            .signal
-            .logEvents()
-            .withJustLatest(from: currentRecipe)
-            .logEvents()
-            .flatMap(.latest) { recipe in
-                service.add(recipe: recipe)
-            }
+            .asObservable()
+            .withLatestFrom(currentNameAndIngredients)
+            .flatMapLatest(service.rxAddRecipe(name:ingredientsAndAmounts:))
+        
     }
     
     // MARK: - Inputs
     
-    private let nameTextProperty = MutableProperty<String>("")
+    private let nameTextProperty = PublishSubject<String>()
     internal func nameUpdated(to newName: String) {
-        nameTextProperty.value = newName
+        nameTextProperty.onNext(newName)
     }
     
-    private let ingredientSelectedProperty = MutableProperty<Ingredient?>(nil)
+    private let ingredientSelectedProperty = PublishSubject<Ingredient?>()
     internal func ingredientSelected(_ ingredient: Ingredient) {
-        self.ingredientSelectedProperty.value = ingredient
+        self.ingredientSelectedProperty.onNext(ingredient)
     }
     
-    private let amountSelectedProperty = MutableProperty<Recipe.IngredientAndAmount?>(nil)
+    private let amountSelectedProperty = PublishSubject<Recipe.IngredientAndAmount?>()
     internal func amountSelected(for ingredient: Ingredient, amount: Grams) {
-        self.amountSelectedProperty.value = (ingredient, amount)
+        self.amountSelectedProperty.onNext((ingredient, amount))
     }
     
-    private let donePressedProperty = MutableProperty<Void>(())
+    private let donePressedProperty = PublishSubject<Void>()
     internal func donePressed() {
-        self.donePressedProperty.value = ()
+        self.donePressedProperty.onNext(())
     }
     
     // MARK: - Outputs
     
-    let showAlertToGatherAmountOfIngredient: Signal<Ingredient, NoError>
+    let showAlertToGatherAmountOfIngredient: Observable<Ingredient>
     
-    let doneButtonEnabled: Signal<Bool, NoError>
+    let doneButtonEnabled: Observable<Bool>
     
-    let showConfirmationAndDismiss: Signal<Void, NoError>
+    let showConfirmationAndDismiss: Observable<Recipe>
     
     var inputs: RecipeCreationViewModelInputs { return self }
     var outputs: RecipeCreationViewModelOutputs { return self }

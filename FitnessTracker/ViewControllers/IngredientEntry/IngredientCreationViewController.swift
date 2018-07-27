@@ -10,10 +10,12 @@ import UIKit
 import FitnessTrackerKit
 import ReactiveSwift
 import ReactiveCocoa
+import RxSwift
 
 final internal class IngredientCreationViewController: UITableViewController {
     
     private let viewModel: IngredientCreationViewModelType = IngredientCreationViewModel()
+    let disposeBag = DisposeBag()
     
     enum CellModel {
         case nameEntry
@@ -39,9 +41,9 @@ final internal class IngredientCreationViewController: UITableViewController {
                 cell.selectionStyle = .none
                 cell.leftLabel.text = leftText
                 cell.textField.keyboardType = keyboardType
-                cell.textField.reactive
+                cell.textField.reactive    
                     .continuousTextValues
-                    .mapNilToEmpty
+                    .map { $0 ?? "" }
                     .observeValues(action)
                 return cell
             }
@@ -66,13 +68,14 @@ final internal class IngredientCreationViewController: UITableViewController {
                 cell.doneButton.isEnabled = false
                 cell.selectionStyle = .none
                 self.viewModel.outputs.doneButtonEnabled
-                    .observe(on: UIScheduler())
-                    .observeValues { isEnabled in
+                    .observeOnUI()
+                    .subscribe(onNext: { isEnabled in
                         cell.doneButton.isEnabled = isEnabled
-                    }
+                    })
+                    .disposed(by: self.disposeBag)
                 
                 cell.doneButton.reactive
-                    .touchUpControlEvent
+                    .controlEvents(.touchUpInside)
                     .observeValues { _ in
                         self.viewModel.inputs.donePressed()
                     }
@@ -97,10 +100,11 @@ final internal class IngredientCreationViewController: UITableViewController {
         self.tableView.set(dataProvider: self.dataProvider)
         
         self.viewModel.outputs.dismiss
-            .observe(on: UIScheduler())
-            .observeValues {
+            .observeOnUI()
+            .subscribe(onNext: { _ in
                 self.dismiss(animated: true, completion: nil)
-            }
+            })
+            .disposed(by: disposeBag)
     }
     
 }

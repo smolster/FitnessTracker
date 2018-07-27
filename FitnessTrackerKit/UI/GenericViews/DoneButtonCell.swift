@@ -11,6 +11,14 @@ import UIKit
 public final class DoneButtonCell: UITableViewCell {
     public let doneButton = UIButton(type: .custom)
     
+    public var title: String {
+        get {
+            return doneButton.currentTitle ?? ""
+        } set {
+            doneButton.setTitle(newValue, for: UIControlState())
+        }
+    }
+    
     public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
@@ -27,6 +35,7 @@ public final class DoneButtonCell: UITableViewCell {
         
         self.doneButton.setTitle("Done", for: UIControlState())
         self.doneButton.setTitleColor(.blue, for: UIControlState())
+        self.doneButton.setTitleColor(.gray, for: .disabled)
         NSLayoutConstraint.activate([
             doneButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding(.large)),
             doneButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding(.medium)),

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Meal {
+public struct Meal: Identifiable {
     
     public typealias ComponentAndAmount = (component: Component, amount: Grams)
     
@@ -43,6 +43,8 @@ public struct Meal {
         }
     }
     
+    public let id: Id
+    
     public let entryDate: Date
     public let componentsAndAmounts: [ComponentAndAmount]
     
@@ -52,7 +54,8 @@ public struct Meal {
         return totalMacros.calories
     }
     
-    public init(entryDate: Date, componentsAndAmounts: [ComponentAndAmount]) {
+    internal init(id: Id, entryDate: Date, componentsAndAmounts: [ComponentAndAmount]) {
+        self.id = id
         self.entryDate = entryDate
         self.componentsAndAmounts = componentsAndAmounts
         self.totalMacros = componentsAndAmounts.reduce(.zero) { result, item in

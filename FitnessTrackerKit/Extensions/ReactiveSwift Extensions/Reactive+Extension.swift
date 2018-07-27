@@ -7,22 +7,21 @@
 //
 
 import UIKit
-import ReactiveSwift
-import ReactiveCocoa
-import Result
+import RxSwift
+import RxCocoa
 
 public extension Reactive where Base: UIButton {
     
     /// Shorthand for `controlEvents(.touchUpInside)`.
-    public var touchUpControlEvent: Signal<Base, NoError> {
-        return self.controlEvents(.touchUpInside)
+    public var touchUpControlEvent: ControlEvent<()> {
+        return self.controlEvent(.touchUpInside)
     }
 }
 
 public extension Reactive where Base: UITextField {
     
     /// Emits a continuous stream of `Int` values, mapped from `String` input.
-    public var continuousIntValues: Signal<Int?, NoError> {
-        return self.continuousTextValues.mapNilToEmpty.mapToInt
+    public var intValues: Observable<Int?> {
+        return self.text.map { Int($0 ?? "") }
     }
 }

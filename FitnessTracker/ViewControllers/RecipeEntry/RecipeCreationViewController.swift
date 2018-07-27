@@ -1,4 +1,4 @@
-1// 
+// 
 //  RecipeCreationViewController.swift
 //  FitnessTracker
 //
@@ -11,9 +11,11 @@ import FitnessTrackerKit
 import ReactiveSwift
 import ReactiveCocoa
 import Result
+import RxSwift
 
 final internal class RecipeCreationViewController: UITableViewController {
     
+    let disposeBag = DisposeBag()
     private let viewModel: RecipeCreationViewModelType = RecipeCreationViewModel()
     
     internal init() {
@@ -47,10 +49,11 @@ final internal class RecipeCreationViewController: UITableViewController {
                 cell.contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 60)
                 cell.selectionStyle = .none
                 cell.leftLabel.text = "Name"
-                cell.textField.reactive
-                    .continuousTextValues
-                    .mapNilToEmpty
-                    .observeValues(self.viewModel.inputs.nameUpdated(to:))
+                cell.textField.rx
+                    .text
+                    .map { $0 ?? "" }
+                    .subscribe(onNext: self.viewModel.inputs.nameUpdated(to:))
+                    .disposed(by: self.disposeBag)
                 return cell
             case .ingredient(let ingredient):
                 let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
@@ -62,10 +65,19 @@ final internal class RecipeCreationViewController: UITableViewController {
                 return cell
             case .done:
                 let cell = DoneButtonCell()
-                cell.doneButton.reactive.isEnabled <~ self.viewModel.outputs.doneButtonEnabled
-                cell.doneButton.reactive.touchUpControlEvent.observeValues { _ in
-                    self.viewModel.inputs.donePressed()
-                }
+                self.viewModel.outputs.doneButtonEnabled
+                    .observeOnUI()
+                    .subscribe(onNext: { isEnabled in
+                        cell.doneButton.isEnabled = isEnabled
+                    })
+                    .disposed(by: self.disposeBag)
+                
+                cell.doneButton.rx
+                    .controlEvent(.touchUpInside)
+                    .subscribe(onNext: { [unowned self] in
+                        self.viewModel.inputs.donePressed()
+                    })
+                    .disposed(by: self.disposeBag)
                 return cell
             }
         },
@@ -98,7 +110,7 @@ final internal class RecipeCreationViewController: UITableViewController {
         
         self.viewModel.outputs.showAlertToGatherAmountOfIngredient
             .observeOnUI()
-            .observeValues { ingredient in
+            .subscribe(onNext: { ingredient in
                 let alert = UIAlertController.textEntry(
                     message: "How many grams of \(ingredient.name)",
                     keyboardType: .decimalPad,
@@ -109,13 +121,15 @@ final internal class RecipeCreationViewController: UITableViewController {
                     }
                 )
                 self.present(alert, animated: true, completion: nil)
-            }
+            })
+            .disposed(by: self.disposeBag)
         
         self.viewModel.outputs.showConfirmationAndDismiss
             .observeOnUI()
-            .observeValues {
+            .subscribe(onNext: { _ in
                 self.dismissOrPop()
-            }
+            })
+            .disposed(by: self.disposeBag)
     }
     
 }

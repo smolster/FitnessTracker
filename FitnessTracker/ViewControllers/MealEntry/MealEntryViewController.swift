@@ -11,8 +11,11 @@ import FitnessTrackerKit
 import ReactiveSwift
 import ReactiveCocoa
 import Result
+import RxSwift
 
 class MealEntryViewController: UITableViewController {
+    
+    let disposeBag = DisposeBag()
     
     enum CellModel: TableCellTypesProviding {
         case item(Meal.ComponentAndAmount)
@@ -20,7 +23,7 @@ class MealEntryViewController: UITableViewController {
         case done
         
         static var cellTypes: [UITableViewCell.Type] {
-            return [MealComponentCell.self]
+            return [TwoLabelCell.self]
         }
     }
     
@@ -42,7 +45,7 @@ class MealEntryViewController: UITableViewController {
         cellCreationBlock: { tableView, model, indexPath in
             switch model {
             case .item(let componentAndAmount):
-                let cell = tableView.dequeueReusableCell(withType: MealComponentCell.self, for: indexPath)
+                let cell = tableView.dequeueReusableCell(withType: TwoLabelCell.self, for: indexPath)
                 cell.configure(with: componentAndAmount)
                 cell.selectionStyle = .none
                 return cell
@@ -53,7 +56,7 @@ class MealEntryViewController: UITableViewController {
             case .done:
                 let cell = DoneButtonCell()
                 cell.doneButton.reactive
-                    .touchUpControlEvent
+                    .controlEvents(.touchUpInside)
                     .observeValues { [unowned self] _ in
                         self.viewModel.inputs.donePressed()
                     }
@@ -88,18 +91,21 @@ class MealEntryViewController: UITableViewController {
         
         self.viewModel.outputs.goToIngredientSelection
             .observeOnUI()
-            .observeValues { [unowned self] in self.navigationController?.pushViewController(MealComponentSelectionViewController(kind: .ingredient, self.viewModel.inputs.componentChosen), animated: true)
-            }
+            .subscribe(onNext: { [unowned self] in
+                self.navigationController?.pushViewController(MealComponentSelectionViewController(kind: .ingredient, self.viewModel.inputs.componentChosen), animated: true)
+            })
+            .disposed(by: disposeBag)
         
         self.viewModel.outputs.goToRecipeSelection
             .observeOnUI()
-            .observeValues { [unowned self] in
+            .subscribe(onNext: { [unowned self] in
                 self.navigationController?.pushViewController(MealComponentSelectionViewController(kind: .recipe, self.viewModel.inputs.componentChosen), animated: true)
-            }
+            })
+            .disposed(by: disposeBag)
         
         self.viewModel.outputs.showAlertToGatherAmountForComponent
             .observeOnUI()
-            .observeValues { component in
+            .subscribe(onNext: { component in
                 let alert = UIAlertController(title: nil, message: "How many grams of this item?", preferredStyle: .alert)
                 let doneAction = UIAlertAction(title: "Done", style: .default, handler: { action in
                     self.viewModel.inputs.componentAmountProvided(
@@ -112,18 +118,20 @@ class MealEntryViewController: UITableViewController {
                 alert.addTextField(configurationHandler: { textField in
                     textField.keyboardType = .decimalPad
                     textField.reactive
-                        .continuousIntValues
+                        .continuousTextValues
+                        .map { Int($0 ?? "")}
                         .observeValues { integer in
                             doneAction.isEnabled = integer != nil
                         }
                 })
                 
                 self.present(alert, animated: true, completion: nil)
-            }
+            })
+            .disposed(by: disposeBag)
         
         self.viewModel.outputs.insertComponent
             .observeOnUI()
-            .observeValues { componentAndAmount in
+            .subscribe(onNext: { componentAndAmount in
                 let sectionIndex: Int
                 switch componentAndAmount.component {
                 case .ingredient: sectionIndex = 1
@@ -147,10 +155,28 @@ class MealEntryViewController: UITableViewController {
                         on: self.tableView
                     )
                 }
-            }
+            })
+            .disposed(by: disposeBag)
         
+        self.viewModel.outputs.pop
+            .observeOnUI()
+            .subscribe(onNext: { _ in
+                self.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 
+}
+
+fileprivate extension TwoLabelCell {
+    fileprivate func configure(with mealComponentAndAmount: Meal.ComponentAndAmount) {
+        switch mealComponentAndAmount.component {
+        case .recipe(let recipe):           self.leftText = "\(recipe.name)"
+        case .ingredient(let ingredient):   self.leftText = "\(ingredient.name)"
+        }
+        
+        self.rightText = "Calories: \(mealComponentAndAmount.component.calories(in: mealComponentAndAmount.amount))"
+    }
 }
 
 fileprivate extension Meal.Component.Kind {

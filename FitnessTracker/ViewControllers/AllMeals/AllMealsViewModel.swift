@@ -7,9 +7,8 @@
 //
 
 import Foundation
-import ReactiveSwift
-import Result
 import FitnessTrackerKit
+import RxSwift
 
 internal protocol AllMealsViewModelInputs {
     /// Called on viewWillAppear.
@@ -18,7 +17,7 @@ internal protocol AllMealsViewModelInputs {
 
 internal protocol AllMealsViewModelOutputs {
     /// Outputs a signal when the days are loaded.
-    var days: Signal<[Day], NoError> { get }
+    var days: Observable<[Day]> { get }
 }
 
 internal protocol AllMealsViewModelType {
@@ -33,8 +32,8 @@ final internal class AllMealsViewModel: AllMealsViewModelType, AllMealsViewModel
     init(service: APIService = APIService()) {
         self.service = service
         self.days = viewWillAppearProperty
-            .signal
-            .flatMap(.latest, { _ in service.getAllMealsByDay(in: .current)})
+            .asObservable()
+            .flatMapLatest { service.rxGetAllMealsByDay(in: .current)}
     }
     
     var inputs: AllMealsViewModelInputs { return self }
@@ -42,12 +41,12 @@ final internal class AllMealsViewModel: AllMealsViewModelType, AllMealsViewModel
     
     // MARK: - Inputs
     
-    let viewWillAppearProperty = MutableProperty<Void>(())
+    let viewWillAppearProperty = PublishSubject<Void>()
     func viewWillAppear() {
-        viewWillAppearProperty.value = ()
+        viewWillAppearProperty.onNext(())
     }
     
     // MARK: - Outputs
     
-    let days: Signal<[Day], NoError>
+    let days: Observable<[Day]>
 }

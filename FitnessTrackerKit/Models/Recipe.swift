@@ -8,10 +8,21 @@
 
 import Foundation
 
-public struct Recipe: MacroCalculatable {
+public protocol Identifiable {
+    associatedtype Id: Equatable
+}
+
+extension Identifiable {
+    public typealias Id = SimpleTag<Self, String>
+}
+
+public struct Recipe: MacroCalculatable, Identifiable {
     public typealias IngredientAndAmount = (ingredient: Ingredient, amount: Grams)
     
+    public let id: Id
+    
     public let name: String
+    
     public let ingredientsAndAmountsIn100g: [IngredientAndAmount]
     
     public let macrosIn100g: MacroCount
@@ -20,7 +31,8 @@ public struct Recipe: MacroCalculatable {
         return macrosIn100g * (gramsOfItem.rawValue / 100)
     }
     
-    public init(name: String, ingredientsAndAmountsIn100g: [IngredientAndAmount]) {
+    internal init(id: Id, name: String, ingredientsAndAmountsIn100g: [IngredientAndAmount]) {
+        self.id = id
         self.name = name
         self.ingredientsAndAmountsIn100g = ingredientsAndAmountsIn100g
         self.macrosIn100g = ingredientsAndAmountsIn100g.reduce(.zero) { (result, item) in

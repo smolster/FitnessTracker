@@ -1,5 +1,5 @@
 //
-//  MealComponentCell.swift
+//  TwoLabelCell.swift
 //  FitnessTracker
 //
 //  Created by Swain Molster on 7/22/18.
@@ -9,11 +9,27 @@
 import UIKit
 import FitnessTrackerKit
 
-internal final class MealComponentCell: UITableViewCell, View {
-    typealias ViewModel = Meal.ComponentAndAmount
-    
+internal final class TwoLabelCell: UITableViewCell {
     private let leftLabel = UILabel.base()
     private let rightLabel = UILabel.base()
+    
+    internal var leftText: String {
+        get {
+            return leftLabel.text ?? ""
+        }
+        set {
+            self.leftLabel.text = newValue
+        }
+    }
+    
+    internal var rightText: String {
+        get {
+            return rightLabel.text ?? ""
+        }
+        set {
+            self.rightLabel.text = newValue
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -26,6 +42,9 @@ internal final class MealComponentCell: UITableViewCell, View {
     }
     
     private func commonInit() {
+        leftLabel.numberOfLines = 0
+        rightLabel.numberOfLines = 0
+        
         self.contentView.addSubviews([leftLabel, rightLabel])
         NSLayoutConstraint.activate([
             leftLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding(.large)),
@@ -42,16 +61,5 @@ internal final class MealComponentCell: UITableViewCell, View {
         leftLabel.setContentHuggingPriority(.required, for: .horizontal)
         
         rightLabel.textAlignment = .right
-    }
-    
-    internal func configure(with viewModel: Meal.ComponentAndAmount) {
-        let leftText: String
-        switch viewModel.component {
-        case .recipe(let recipe):           leftText = "\(recipe.name) (R)"
-        case .ingredient(let ingredient):   leftText = "\(ingredient.name) (I)"
-        }
-        self.leftLabel.text = leftText
-        
-        self.rightLabel.text = "Calories: \(viewModel.component.calories(in: viewModel.amount))"
     }
 }

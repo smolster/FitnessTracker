@@ -8,8 +8,7 @@
 
 import Foundation
 import FitnessTrackerKit
-import ReactiveSwift
-import Result
+import RxSwift
 
 internal protocol ChooseRecipeViewModelInputs {
     func viewWillAppear()
@@ -17,7 +16,7 @@ internal protocol ChooseRecipeViewModelInputs {
 }
 
 internal protocol ChooseRecipeViewModelOutputs {
-    var existingRecipes: Signal<[Recipe], NoError> { get }
+    var existingRecipes: Observable<[Recipe]> { get }
 }
 
 internal protocol ChooseRecipeViewModelType {
@@ -29,25 +28,27 @@ internal final class ChooseRecipeViewModel: ChooseRecipeViewModelType, ChooseRec
     
     init(service: APIServiceType = APIService()) {
         self.existingRecipes = viewWillAppearProperty
-            .signal
-            .flatMap(.latest, { _ in service.getAllRecipes() })
+            .asObservable()
+            .flatMap {
+                return service.rxAllRecipes()
+            }
     }
     
     // MARK: - Inputs
     
-    let viewWillAppearProperty = MutableProperty<Void>(())
+    let viewWillAppearProperty = PublishSubject<Void>()
     internal func viewWillAppear() {
-        self.viewWillAppearProperty.value = ()
+        self.viewWillAppearProperty.onNext(())
     }
     
-    let newRecipeCreatedProperty = MutableProperty<Recipe?>(nil)
+    let newRecipeCreatedProperty = PublishSubject<Recipe?>()
     internal func newRecipeCreated(_ recipe: Recipe) {
-        self.newRecipeCreatedProperty.value = recipe
+        self.newRecipeCreatedProperty.onNext(recipe)
     }
     
     // MARK: - Outputs
     
-    let existingRecipes: Signal<[Recipe], NoError>
+    let existingRecipes: Observable<[Recipe]>
     
     var inputs: ChooseRecipeViewModelInputs { return self }
     var outputs: ChooseRecipeViewModelOutputs { return self }
