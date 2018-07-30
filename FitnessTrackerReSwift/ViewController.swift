@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import FitnessTrackerKit
 
-public enum ViewController: Int, CoreState {
+internal enum ViewController: Int, CoreState {
     
     case today
     case allMeals
@@ -32,12 +32,12 @@ public enum ViewController: Int, CoreState {
 // Only conditionally conforming because I know that Arrays of `ViewController`s will almost always be small, and this implementation is NOT very performant.
 extension Array: Diffable where Element == ViewController {
     
-    public enum Change {
+    internal enum Change {
         case insertedElementsAtIndices([(Element, Index)])
         case removedElementsAtIndices([(Element, Index)])
     }
     
-    public func differences(to other: [Element]) -> [Change] {
+    internal func differences(to other: [Element]) -> [Change] {
         guard self != other else {
             return []
         }

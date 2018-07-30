@@ -14,13 +14,21 @@ internal struct AppState: StateType {
     var viewState: ViewState
     
     var allMeals: Resource<[Meal]>
+    var allIngredients: Resource<[Ingredient]>
+    var allRecipes: Resource<[Recipe]>
+    var allMealsByDay: Resource<[Day]>
+    
+//    var ingredientEntryState: 
 }
 
 extension AppState: HasInitial {
     internal static var initial: AppState {
         return AppState(
             viewState: .initial,
-            allMeals: .notQueried
+            allMeals: .notQueried,
+            allIngredients: .notQueried,
+            allRecipes: .notQueried,
+            allMealsByDay: .notQueried
         )
     }
 }

@@ -16,14 +16,25 @@ typealias MealWithDisplayTime = (meal: Meal, displayTime: String)
 typealias DayWithMealDisplayTimes = (day: Day, mealsWithDisplayTimes: [MealWithDisplayTime])
 
 internal protocol TodayViewModelInputs {
+    
+    /// Call on viewWillAppear.
     func viewWillAppear()
+    
+    /// Call when user taps "Add Entry".
     func addEntryPressed()
+    
+    /// Call when the user taps on a meal they have already had.
     func selectedMeal(_ meal: Meal)
 }
 
 internal protocol TodayViewModelOutputs {
+    /// Emits when we should show the meal entry flow.
     var showMealEntry: Observable<Void> { get }
+    
+    /// Emits today's meals and time strings.
     var today: Observable<DayWithMealDisplayTimes?> { get }
+    
+    /// Emits when we should show an alert with a given title & message.
     var showAlertWithMessage: Observable<AlertStrings> { get }
 }
 

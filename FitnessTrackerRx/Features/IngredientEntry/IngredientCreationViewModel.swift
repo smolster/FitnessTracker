@@ -11,16 +11,28 @@ import FitnessTrackerKit
 import RxSwift
 
 internal protocol IngredientCreationViewModelInputs {
+    
+    /// Call when the name changes.
     func setName(_ name: String)
+    
+    /// Call when the protein entry changes.
     func setProteinGrams(_ grams: Int?)
+    
+    /// Call when the carbs entry changes.
     func setCarbsGrams(_ grams: Int?)
+    
+    /// Call when the fat entry changes.
     func setFatGrams(_ grams: Int?)
     
+    /// Call when the user taps the "Done" button.
     func donePressed()
 }
 
 internal protocol IngredientCreationViewModelOutputs {
+    /// Emits whether or not the done button should be enabled.
     var doneButtonEnabled: Observable<Bool> { get }
+    
+    /// Emits when we should dismiss the screen.
     var dismiss: Observable<Ingredient> { get }
 }
 

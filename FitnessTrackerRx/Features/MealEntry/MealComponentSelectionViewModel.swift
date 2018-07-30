@@ -11,14 +11,25 @@ import FitnessTrackerKit
 import RxSwift
 
 internal protocol MealComponentSelectionViewModelInputs {
+    /// Call on viewWillAppear, with the `kind`.
     func viewWillAppear(with kind: Meal.Component.Kind)
+    
+    /// Call when the user taps "Create New".
     func createNewPressed()
+    
+    /// Call when the user selects a component.
     func componentSelected(_ component: Meal.Component)
 }
 
 internal protocol MealComponentSelectionViewModelOutputs {
+    
+    /// Emits all available components.
     var components: Observable<[Meal.Component]> { get }
+    
+    /// Emits when we should go to the "Create New" flow.
     var goToCreateNew: Observable<Meal.Component.Kind> { get }
+    
+    /// Emits when we should dismiss this screen.
     var dismissIfPresented: Observable<Void> { get }
 }
 

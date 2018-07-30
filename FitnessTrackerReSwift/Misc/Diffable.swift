@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol Diffable {
+internal protocol Diffable {
     associatedtype Change
     func differences(to other: Self) -> [Change]
 }

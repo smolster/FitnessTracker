@@ -11,15 +11,27 @@ import FitnessTrackerKit
 import RxSwift
 
 internal protocol RecipeCreationViewModelInputs {
+    /// Call when the name text changes.
     func nameUpdated(to newName: String)
+    
+    /// Call when the user has selected an ingredient.
     func ingredientSelected(_ ingredient: Ingredient)
+    
+    /// Call when the user has provided an amount for a selected ingredient.
     func amountSelected(for ingredient: Ingredient, amount: Grams)
+    
+    /// Call when the user taps "Done".
     func donePressed()
 }
 
 internal protocol RecipeCreationViewModelOutputs {
+    /// Emits when we should show an alert to gather the amount of the given ingredient.
     var showAlertToGatherAmountOfIngredient: Observable<Ingredient> { get }
+    
+    /// Emits whether or not the "Done" button should be available.
     var doneButtonEnabled: Observable<Bool> { get }
+    
+    /// Emits when we should show a confirmation of recipe creation, and dismiss the screen.
     var showConfirmationAndDismiss: Observable<Recipe> { get }
 }
 

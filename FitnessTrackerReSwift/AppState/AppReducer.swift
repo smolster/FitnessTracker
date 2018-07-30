@@ -9,6 +9,17 @@
 import Foundation
 import ReSwift
 
-internal let appReducer: Reducer<AppState> = { action, oldState in
-    return oldState!
+internal func appReducer(action: Action, _ oldState: AppState?) -> AppState {
+    guard let oldState = oldState else { return .initial }
+    
+    var newState = oldState
+    
+    if let resourceAction = action as? ResourceAction<AppState> {
+        resourceAction.apply(to: &newState)
+    } else if let navigationAction = action as? NavigationAction {
+        newState.viewState = navigationReducer(oldState.viewState, action: navigationAction)
+    } else {
+        fatalError("Unsupported action sent to app reducer: \(action)")
+    }
+    return newState
 }

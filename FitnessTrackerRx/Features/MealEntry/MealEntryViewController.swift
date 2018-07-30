@@ -8,8 +8,6 @@
 
 import UIKit
 import FitnessTrackerKit
-import ReactiveCocoa
-import Result
 import RxSwift
 
 class MealEntryViewController: UITableViewController {
@@ -28,6 +26,7 @@ class MealEntryViewController: UITableViewController {
     
     internal init() {
         super.init(style: .grouped)
+        UIButton()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -41,7 +40,7 @@ class MealEntryViewController: UITableViewController {
             .init([.addItem]),
             .init([.done])
         ],
-        cellCreationBlock: { tableView, model, indexPath in
+        cellCreationBlock: { [unowned self] tableView, model, indexPath in
             switch model {
             case .item(let componentAndAmount):
                 let cell = tableView.dequeueReusableCell(withType: TwoLabelCell.self, for: indexPath)
@@ -54,11 +53,12 @@ class MealEntryViewController: UITableViewController {
                 return cell
             case .done:
                 let cell = DoneButtonCell()
-                cell.doneButton.reactive
-                    .controlEvents(.touchUpInside)
-                    .observeValues { [unowned self] _ in
+                cell.doneButton.rx
+                    .controlEvent(.touchUpInside)
+                    .subscribe(onNext: { [unowned self] in
                         self.viewModel.inputs.donePressed()
-                    }
+                    })
+                    .disposed(by: self.disposeBag)
                 return cell
             }
         },
@@ -116,12 +116,13 @@ class MealEntryViewController: UITableViewController {
                 alert.addAction(doneAction)
                 alert.addTextField(configurationHandler: { textField in
                     textField.keyboardType = .decimalPad
-                    textField.reactive
-                        .continuousTextValues
+                    textField.rx
+                        .text
                         .map { Int($0 ?? "")}
-                        .observeValues { integer in
+                        .subscribe(onNext: { [unowned doneAction] integer in
                             doneAction.isEnabled = integer != nil
-                        }
+                        })
+                        .disposed(by: self.disposeBag)
                 })
                 
                 self.present(alert, animated: true, completion: nil)

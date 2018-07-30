@@ -11,16 +11,18 @@ import FitnessTrackerKit
 import RxSwift
 
 internal protocol AllMealsViewModelInputs {
-    /// Called on viewWillAppear.
+    /// Call on viewWillAppear.
     func viewWillAppear()
     
+    /// Call when the user selects a particular day.
     func selectedDay(_ day: Day)
 }
 
 internal protocol AllMealsViewModelOutputs {
-    /// Outputs a signal when the days are loaded.
+    /// Emits all days.
     var days: Observable<[Day]> { get }
     
+    /// Emits when we should show an alert with the given title and message.
     var showAlert: Observable<AlertStrings> { get }
 }
 

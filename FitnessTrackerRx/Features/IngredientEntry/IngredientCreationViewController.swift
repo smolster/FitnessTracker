@@ -8,7 +8,6 @@
 
 import UIKit
 import FitnessTrackerKit
-import ReactiveCocoa
 import RxSwift
 
 final internal class IngredientCreationViewController: UITableViewController {
@@ -32,7 +31,7 @@ final internal class IngredientCreationViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private lazy var dataProvider = TableDataProvider<CellModel>(
+    private lazy var dataProvider = CollectionDataProvider<CellModel>.table(
         sections: [.init([.nameEntry, .proteinEntry, .carbsEntry, .fatEntry]), .init([.done])],
         cellCreationBlock: { [unowned self] tableView, model, indexPath in
             func textEntryCell(leftText: String, keyboardType: UIKeyboardType, action: @escaping (String) -> Void) -> TextEntryCell {
@@ -40,10 +39,11 @@ final internal class IngredientCreationViewController: UITableViewController {
                 cell.selectionStyle = .none
                 cell.leftLabel.text = leftText
                 cell.textField.keyboardType = keyboardType
-                cell.textField.reactive    
-                    .continuousTextValues
+                cell.textField.rx
+                    .text
                     .map { $0 ?? "" }
-                    .observeValues(action)
+                    .subscribe(onNext: action)
+                    .disposed(by: self.disposeBag)
                 return cell
             }
             
@@ -73,11 +73,11 @@ final internal class IngredientCreationViewController: UITableViewController {
                     })
                     .disposed(by: self.disposeBag)
                 
-                cell.doneButton.reactive
-                    .controlEvents(.touchUpInside)
-                    .observeValues { _ in
-                        self.viewModel.inputs.donePressed()
-                    }
+                cell.doneButton.rx
+                    .controlEvent(.touchUpInside)
+                    .asObservable()
+                    .bind(onNext: self.viewModel.inputs.donePressed)
+                    .disposed(by: self.disposeBag)
                 return cell
             }
         },

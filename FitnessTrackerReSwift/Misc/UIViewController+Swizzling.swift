@@ -72,7 +72,7 @@ extension UIViewController {
                 self.backButtonPressed()
                 
                 storeDispatchQueue.sync {
-                    store.dispatch(NavigationAction.popViewController)
+                    store.dispatch(NavigationAction.pop)
                 }
             }
         }

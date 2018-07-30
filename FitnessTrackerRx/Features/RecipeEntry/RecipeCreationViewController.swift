@@ -8,8 +8,6 @@
 
 import UIKit
 import FitnessTrackerKit
-import ReactiveCocoa
-import Result
 import RxSwift
 
 final internal class RecipeCreationViewController: UITableViewController {
@@ -39,7 +37,7 @@ final internal class RecipeCreationViewController: UITableViewController {
         }
     }
     
-    private lazy var dataProvider = TableDataProvider<CellModel>(
+    private lazy var dataProvider = CollectionDataProvider<CellModel>.table(
         sections: [.init([.nameEntry, .addIngredient]), .init([.done])],
         cellCreationBlock: { [unowned self] tableView, cellModel, indexPath in
             switch cellModel {

@@ -8,26 +8,22 @@
 
 import ReSwift
 
-internal enum Route { }
-
-typealias CoreAction = Action
-
 internal enum NavigationAction: CoreAction {
     
     /// Switches to a provided tab.
     case switchTab(to: ViewState.Tab)
     
     /// Pushes a view controller onto the currently selected tab stack.
-    case pushViewController(ViewController)
+    case push(ViewController)
     
     /// Pops the top view controller from the currently selected tab's stack.
-    case popViewController
+    case pop
     
     /// Pops to a view controller within the currently selected tab's stack. If the view controller is not present, no action will be taken.
-    case popToViewController(ViewController)
+    case popTo(ViewController)
     
     /// Presents a view controller on the top-most view controller of the currently selected tab's stack.
-    case presentViewController(ViewController)
+    case present(ViewController)
     
     /// Presents a view controller wrapped in a navigation controller on the top-most view controller of the currently selected tab's stack.
     case presentInNav(ViewController)
@@ -37,25 +33,4 @@ internal enum NavigationAction: CoreAction {
     
     /// Sets the view hierarchy to the route, and navigates the user there, if necessary.
     case setRoute(Route)
-    
-    var loggingString: String {
-        switch self {
-        case .switchTab(to: let toTab):
-            return "Switched to \(toTab.name) tab."
-        case .pushViewController(let viewController):
-            return "Pushed view controller of type \(viewController)."
-        case .popViewController:
-            return "Popped view controller."
-        case .popToViewController(let viewController):
-            return "Popped to view controller: \(viewController.rawValue)"
-        case .presentViewController(let viewController):
-            return "Presented view controller: \(viewController.rawValue)"
-        case .presentInNav(let viewController):
-            return "Presented view controller in nav: \(viewController.rawValue)"
-        case .dismissModal:
-            return "Dismissed modal"
-        case .setRoute:
-            return "Route set."
-        }
-    }
 }

@@ -37,7 +37,7 @@ final internal class MealComponentSelectionViewController: UITableViewController
         fatalError("init(coder:) has not been implemented")
     }
     
-    private lazy var dataProvider = TableDataProvider<CellModel>(
+    private lazy var dataProvider = CollectionDataProvider<CellModel>.table(
         sections: [],
         cellCreationBlock: { tableView, model, indexPath in
             switch model {

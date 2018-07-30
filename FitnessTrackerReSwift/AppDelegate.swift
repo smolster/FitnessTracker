@@ -17,12 +17,22 @@ internal class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = NavigationManager.shared.rootTabController
         return window
     }()
+    
+    /// Our `AppDelegate` instance.
+    static fileprivate(set) weak var shared: AppDelegate!
 
     internal func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
+        AppDelegate.shared = self
         GlobalStyles.apply()
         window.makeKeyAndVisible()
+        
+        if let shortcutItem = launchOptions?[.shortcutItem] as? UIApplicationShortcutItem {
+            dispatchToStore(NavigationAction.setRoute(Route(shortcutItem: shortcutItem)))
+        } else if let url = launchOptions?[.url] as? URL, let route = Route(path: url) {
+            dispatchToStore(NavigationAction.setRoute(route))
+        }
+        
         return true
     }
 
@@ -39,6 +49,11 @@ internal class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        dispatchToStore(NavigationAction.setRoute(Route(shortcutItem: shortcutItem)))
+        completionHandler(true)
+    }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -48,6 +63,12 @@ internal class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        guard let route = Route(path: url) else {
+            return false
+        }
+        dispatchToStore(NavigationAction.setRoute(route))
+        return true
+    }
 }
 

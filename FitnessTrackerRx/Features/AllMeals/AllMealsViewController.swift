@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import ReactiveCocoa
-import Result
 import FitnessTrackerKit
 import RxSwift
 
@@ -17,7 +15,7 @@ internal final class AllMealsViewController: UITableViewController {
     let disposeBag = DisposeBag()
     private let viewModel: AllMealsViewModelType = AllMealsViewModel()
     
-    private lazy var dataProvider = TableDataProvider<Day>(
+    private lazy var dataProvider = CollectionDataProvider<Day>.table(
         models: [],
         cellCreationBlock: { tableView, day, indexPath in
             let cell = UITableViewCell(style: .default, reuseIdentifier: "CELL")

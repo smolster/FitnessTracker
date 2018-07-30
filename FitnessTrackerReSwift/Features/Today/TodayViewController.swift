@@ -12,6 +12,8 @@ import FitnessTrackerKit
 
 internal final class TodayViewController: UIViewController {
     
+    private var strongReferences: [TargetAction] = []
+    
     private enum CellModel {
         case totalCalories(Calories)
         case totalMacros(MacroCount)
@@ -23,7 +25,7 @@ internal final class TodayViewController: UIViewController {
     
     private lazy var dataProvider: CollectionDataProvider<CellModel> = .table(
         sections: [],
-        cellCreationBlock: { tableView, model, indexPath in
+        cellCreationBlock: { [unowned self] tableView, model, indexPath in
             switch model {
             case .totalCalories(let cals):
                 let cell = TwoLabelCell()
@@ -47,10 +49,11 @@ internal final class TodayViewController: UIViewController {
             case .addMeal:
                 let cell = DoneButtonCell()
                 cell.title = "Add Meal"
-                cell.doneButton.rx
-                    .controlEvent(.touchUpInside)
-                    .bind(onNext: self.viewModel.inputs.addEntryPressed)
-                    .disposed(by: self.disposeBag)
+                cell.doneButton
+                    .addAction(for: .touchUpInside) {
+                        // Todo: send an action
+                    }
+                    .storeReference(in: &self.strongReferences)
                 return cell
             }
             
@@ -58,10 +61,19 @@ internal final class TodayViewController: UIViewController {
         didSelectBlock: { [unowned self] tableView, dataProvider, model, indexPath in
             switch model {
             case .meal(let meal, _):
-                self.viewModel.inputs.selectedMeal(meal)
+                break
+                // TODO: Show alert for meal
+//
+//                dispatchToStore(TodayAction.selectedMeal)
+//                self.viewModel.inputs.selectedMeal(meal)
             default:
                 return
             }
         }
     )
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        Current.network.loadMealsByDay()
+    }
 }
