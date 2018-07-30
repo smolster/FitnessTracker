@@ -205,6 +205,8 @@
 		A01A1A5D210AB8E400F05073 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
 		A01A1A5F210ABBB100F05073 /* UITableViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewController+Extension.swift"; sourceTree = "<group>"; };
 		A03DA995210EAECB00DDB20E /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		A03DA997210EB17A00DDB20E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A03DA998210EB36400DDB20E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A058D6022104039F00FA9CA4 /* RecipeCreationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCreationViewController.swift; sourceTree = "<group>"; };
 		A058D6032104039F00FA9CA4 /* RecipeCreationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCreationViewModel.swift; sourceTree = "<group>"; };
 		A058D60F210409F200FA9CA4 /* Reusable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reusable.swift; sourceTree = "<group>"; };
@@ -529,6 +531,7 @@
 		A0A8E3DE20FFD48C00782D1B = {
 			isa = PBXGroup;
 			children = (
+				A03DA997210EB17A00DDB20E /* README.md */,
 				A0A8E3E920FFD48C00782D1B /* FitnessTrackerRx */,
 				A0A8E3FE20FFD48E00782D1B /* FitnessTrackerRxTests */,
 				A0E227FE210BB38700832E74 /* FitnessTrackerReSwift */,
@@ -691,6 +694,7 @@
 		A0DABEF921025F32000AB641 /* FitnessTrackerKit */ = {
 			isa = PBXGroup;
 			children = (
+				A03DA998210EB36400DDB20E /* README.md */,
 				A09239CB2105937800125A38 /* Extensions */,
 				A0DABF152102608A000AB641 /* API */,
 				A0DABF242102608A000AB641 /* UI */,
