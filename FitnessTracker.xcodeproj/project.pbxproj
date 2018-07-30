@@ -10,7 +10,6 @@
 		29D5C188D447869841711A86 /* Pods_FitnessTrackerReSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F96BEC9D0FFCD9AD016843 /* Pods_FitnessTrackerReSwift.framework */; };
 		6BDFF6524746D90B0295796D /* Pods_FitnessTrackerRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 494B21E3089ECFB2B8A6D9F8 /* Pods_FitnessTrackerRx.framework */; };
 		A01A1A542108A91200F05073 /* OptionalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A532108A91200F05073 /* OptionalType.swift */; };
-		A01A1A5A210AA7CA00F05073 /* ObserverType+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A59210AA7CA00F05073 /* ObserverType+Extension.swift */; };
 		A01A1A5E210AB8E400F05073 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A5D210AB8E400F05073 /* UIViewController+Alert.swift */; };
 		A01A1A60210ABBB100F05073 /* UITableViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A5F210ABBB100F05073 /* UITableViewController+Extension.swift */; };
 		A03DA996210EAECB00DDB20E /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03DA995210EAECB00DDB20E /* Environment.swift */; };
@@ -26,8 +25,6 @@
 		A09239922105089700125A38 /* RecipeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239912105089700125A38 /* RecipeObject.swift */; };
 		A092399421050D8500125A38 /* APIOptimizationFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092399321050D8500125A38 /* APIOptimizationFunctions.swift */; };
 		A09239962105120F00125A38 /* RealmDispatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239952105120F00125A38 /* RealmDispatching.swift */; };
-		A09239982105167000125A38 /* Observable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239972105167000125A38 /* Observable+Extension.swift */; };
-		A092399B210516AC00125A38 /* Reactive+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092399A210516AC00125A38 /* Reactive+Extension.swift */; };
 		A092399F2105192C00125A38 /* DoneButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092399E2105192C00125A38 /* DoneButtonCell.swift */; };
 		A09239A521051EA900125A38 /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239A421051EA900125A38 /* UILabel+Extension.swift */; };
 		A09239B221052A7600125A38 /* MealComponentSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239AF21052A7600125A38 /* MealComponentSelectionViewController.swift */; };
@@ -113,6 +110,10 @@
 		A0E22815210BB38900832E74 /* FitnessTrackerReSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0E22814210BB38900832E74 /* FitnessTrackerReSwiftTests.swift */; };
 		A0E2281D210BB3A700832E74 /* FitnessTrackerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0DABEF821025F32000AB641 /* FitnessTrackerKit.framework */; };
 		A0E2281E210BB3A700832E74 /* FitnessTrackerKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A0DABEF821025F32000AB641 /* FitnessTrackerKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A0EBAD5A210EB70B00DAB5E5 /* UIAlertController+Reactive.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EBAD59210EB70B00DAB5E5 /* UIAlertController+Reactive.swift */; };
+		A0EBAD5F210EB91800DAB5E5 /* Observable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239972105167000125A38 /* Observable+Extension.swift */; };
+		A0EBAD60210EB91800DAB5E5 /* ObserverType+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A59210AA7CA00F05073 /* ObserverType+Extension.swift */; };
+		A0EBAD61210EB91800DAB5E5 /* Reactive+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092399A210516AC00125A38 /* Reactive+Extension.swift */; };
 		A6AC1DE0C5B6DDB32DB777AF /* Pods_FitnessTrackerRxTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401AB6031281D92C51584029 /* Pods_FitnessTrackerRxTests.framework */; };
 		D85C08A4ECC4B64ED1E70226 /* Pods_FitnessTrackerKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E9C4301668A80F77FFA0973 /* Pods_FitnessTrackerKitTests.framework */; };
 		E2B5C369A01E9D8DCBFC04EF /* Pods_FitnessTrackerReSwiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03EFF7BF97B3DA8583503D4F /* Pods_FitnessTrackerReSwiftTests.framework */; };
@@ -318,6 +319,7 @@
 		A0E22810210BB38800832E74 /* FitnessTrackerReSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitnessTrackerReSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0E22814210BB38900832E74 /* FitnessTrackerReSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitnessTrackerReSwiftTests.swift; sourceTree = "<group>"; };
 		A0E22816210BB38900832E74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0EBAD59210EB70B00DAB5E5 /* UIAlertController+Reactive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Reactive.swift"; sourceTree = "<group>"; };
 		A3F96BEC9D0FFCD9AD016843 /* Pods_FitnessTrackerReSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FitnessTrackerReSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AED24BC86CD16F27C75526B5 /* Pods-FitnessTrackerRx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessTrackerRx.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FitnessTrackerRx/Pods-FitnessTrackerRx.debug.xcconfig"; sourceTree = "<group>"; };
 		C05E7CDC459497140C275E2E /* Pods-FitnessTrackerReSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessTrackerReSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-FitnessTrackerReSwift/Pods-FitnessTrackerReSwift.release.xcconfig"; sourceTree = "<group>"; };
@@ -688,6 +690,7 @@
 				A09239972105167000125A38 /* Observable+Extension.swift */,
 				A01A1A59210AA7CA00F05073 /* ObserverType+Extension.swift */,
 				A092399A210516AC00125A38 /* Reactive+Extension.swift */,
+				A0EBAD59210EB70B00DAB5E5 /* UIAlertController+Reactive.swift */,
 			);
 			path = "Reactive Extensions";
 			sourceTree = "<group>";
@@ -1267,6 +1270,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0DABF712103BBBF000AB641 /* MealEntryViewController.swift in Sources */,
+				A0EBAD61210EB91800DAB5E5 /* Reactive+Extension.swift in Sources */,
 				A0D171C62108A2880035095D /* TodayViewController.swift in Sources */,
 				A09239CA210589B500125A38 /* MealComponentSelectionCell.swift in Sources */,
 				A0A8E3ED20FFD48C00782D1B /* RootTabController.swift in Sources */,
@@ -1282,6 +1286,9 @@
 				A03DA996210EAECB00DDB20E /* Environment.swift in Sources */,
 				A058D6172104CAFB00FA9CA4 /* IngredientCreationViewModel.swift in Sources */,
 				A0C25F4A210BE088006E1673 /* APIServiceType+Rx.swift in Sources */,
+				A0EBAD5A210EB70B00DAB5E5 /* UIAlertController+Reactive.swift in Sources */,
+				A0EBAD60210EB91800DAB5E5 /* ObserverType+Extension.swift in Sources */,
+				A0EBAD5F210EB91800DAB5E5 /* Observable+Extension.swift in Sources */,
 				A058D6062104039F00FA9CA4 /* RecipeCreationViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1308,7 +1315,6 @@
 				A09239A521051EA900125A38 /* UILabel+Extension.swift in Sources */,
 				A0C25F29210BC3CC006E1673 /* TextEntryCell.swift in Sources */,
 				A09239902105051E00125A38 /* MacroCalculatable.swift in Sources */,
-				A01A1A5A210AA7CA00F05073 /* ObserverType+Extension.swift in Sources */,
 				A0E227A0210B633500832E74 /* CollectionDataProvider+Inits.swift in Sources */,
 				A0DABF462102608A000AB641 /* CollectionViews+Registering.swift in Sources */,
 				A01A1A542108A91200F05073 /* OptionalType.swift in Sources */,
@@ -1330,7 +1336,6 @@
 				A0DABF3C2102608A000AB641 /* Calories.swift in Sources */,
 				A0DABF372102608A000AB641 /* Tag.swift in Sources */,
 				A0DABF3E2102608A000AB641 /* View.swift in Sources */,
-				A09239982105167000125A38 /* Observable+Extension.swift in Sources */,
 				A0649B982106B4FD00360345 /* DispatchFunctions.swift in Sources */,
 				A0DABF332102608A000AB641 /* APIService.swift in Sources */,
 				A092399421050D8500125A38 /* APIOptimizationFunctions.swift in Sources */,
@@ -1341,7 +1346,6 @@
 				A09239D121059BBE00125A38 /* UIViewController+Dismiss.swift in Sources */,
 				A08A9D6E2104FC2E0083E278 /* GlobalStyles.swift in Sources */,
 				A01A1A60210ABBB100F05073 /* UITableViewController+Extension.swift in Sources */,
-				A092399B210516AC00125A38 /* Reactive+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

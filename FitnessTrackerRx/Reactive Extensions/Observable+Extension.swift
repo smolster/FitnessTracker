@@ -1,16 +1,14 @@
 //
 //  Observable+Extension.swift
-//  FitnessTrackerKit
+//  FitnessTrackerRx
 //
 //  Created by Swain Molster on 7/22/18.
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
 import Foundation
-
-#if canImport(RxSwift)
-
 import RxSwift
+import FitnessTrackerKit
 
 public extension Observable where E == String? {
     /// Maps `nil` case to empty `String`.
@@ -53,5 +51,3 @@ extension Observable where Element: OptionalType {
             .map { $0.asOptional.unsafelyUnwrapped }
     }
 }
-
-#endif

@@ -107,7 +107,7 @@ final internal class RecipeCreationViewController: UITableViewController {
         
         self.viewModel.outputs.showAlertToGatherAmountOfIngredient
             .observeOnUI()
-            .subscribe(onNext: { ingredient in
+            .subscribe(onNext: { [unowned self] ingredient in
                 let alert = UIAlertController.textEntry(
                     message: "How many grams of \(ingredient.name)",
                     keyboardType: .decimalPad,
@@ -115,7 +115,8 @@ final internal class RecipeCreationViewController: UITableViewController {
                     doneActionBlock: { alertController, string in
                         self.viewModel.inputs.amountSelected(for: ingredient, amount: .init(rawValue: Int(string)!))
                         alertController.dismiss(animated: true, completion: nil)
-                    }
+                    },
+                    disposeBag: self.disposeBag
                 )
                 self.present(alert, animated: true, completion: nil)
             })
