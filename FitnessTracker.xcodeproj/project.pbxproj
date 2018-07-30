@@ -532,11 +532,12 @@
 			isa = PBXGroup;
 			children = (
 				A03DA997210EB17A00DDB20E /* README.md */,
+				A0DABEF921025F32000AB641 /* FitnessTrackerKit */,
+				A0DABF0621025F32000AB641 /* FitnessTrackerKitTests */,
 				A0A8E3E920FFD48C00782D1B /* FitnessTrackerRx */,
 				A0A8E3FE20FFD48E00782D1B /* FitnessTrackerRxTests */,
 				A0E227FE210BB38700832E74 /* FitnessTrackerReSwift */,
-				A0DABEF921025F32000AB641 /* FitnessTrackerKit */,
-				A0DABF0621025F32000AB641 /* FitnessTrackerKitTests */,
+				A0E22813210BB38900832E74 /* FitnessTrackerReSwiftTests */,
 				A0A8E3E820FFD48C00782D1B /* Products */,
 				76C05BAC89A848BCF9D65054 /* Frameworks */,
 				3B64A8DBA182F9B8206D2EEE /* Pods */,
@@ -821,7 +822,6 @@
 				A0C25F22210BBD1F006E1673 /* RootTabController.swift */,
 				A0649B8C2106A7D000360345 /* ViewController.swift */,
 				A0C25F53210BFE3A006E1673 /* Environment.swift */,
-				A0E22813210BB38900832E74 /* FitnessTrackerReSwiftTests */,
 				A0C25F45210BE011006E1673 /* API */,
 				A0649B902106B31000360345 /* AppState */,
 				A0649B992106B55A00360345 /* ViewState */,
@@ -1024,12 +1024,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				A0DABEF721025F32000AB641 /* FitnessTrackerKit */,
+				A0DABEFF21025F32000AB641 /* FitnessTrackerKitTests */,
 				A0A8E3E620FFD48C00782D1B /* FitnessTrackerRx */,
 				A0A8E3FA20FFD48D00782D1B /* FitnessTrackerRxTests */,
 				A0E227FC210BB38700832E74 /* FitnessTrackerReSwift */,
 				A0E2280F210BB38800832E74 /* FitnessTrackerReSwiftTests */,
-				A0DABEF721025F32000AB641 /* FitnessTrackerKit */,
-				A0DABEFF21025F32000AB641 /* FitnessTrackerKitTests */,
 			);
 		};
 /* End PBXProject section */

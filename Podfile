@@ -29,9 +29,6 @@ target 'FitnessTrackerKit' do
     
     pod 'Realm'
     pod 'RealmSwift'
-    pod 'ReSwift'
-    pod 'RxSwift'
-    pod 'RxCocoa'
     
     target 'FitnessTrackerKitTests' do
         inherit! :search_paths
