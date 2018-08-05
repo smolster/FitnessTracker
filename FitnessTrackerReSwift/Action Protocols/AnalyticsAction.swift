@@ -6,8 +6,6 @@
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
-import ReSwift
-
 protocol AnalyticsAction: Action {
     // Empty, since this app doesn't really do Analytics yet. But, this could be used to great effect!
 }

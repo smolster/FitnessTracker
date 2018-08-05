@@ -7,13 +7,10 @@
 //
 
 import Foundation
-import ReSwift
 
-internal func appReducer(action: Action, _ oldState: AppState?) -> AppState {
-    guard let oldState = oldState else { return .initial }
-    
+internal func appReducer(action: Action, _ oldState: AppState) -> AppState {
     var newState = oldState
-    
+
     if let resourceAction = action as? ResourceAction<AppState> {
         resourceAction.apply(to: &newState)
     } else if let navigationAction = action as? NavigationAction {

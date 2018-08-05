@@ -7,13 +7,12 @@
 //
 
 import Foundation
-import ReSwift
 
 /// Our global `Store`. Do not dispatch actions directly--instead, use `dispatchToStore(_:)`.
 internal let store = Store<AppState>(
+    initialValue: .initial,
     reducer: appReducer,
-    state: .initial,
-    middleware: []
+    middlewares: []
 )
 
 /// Our global Store dispatch queue. Used for dispatching Actions to our global Store.

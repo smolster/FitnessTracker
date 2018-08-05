@@ -6,8 +6,6 @@
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
-import ReSwift
-
 internal protocol LoggableAction: Action {
     /// The string to use for logging.
     var loggingString: String { get }

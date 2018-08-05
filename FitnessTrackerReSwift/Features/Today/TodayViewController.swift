@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ReSwift
 import FitnessTrackerKit
 
 internal final class TodayViewController: UIViewController {

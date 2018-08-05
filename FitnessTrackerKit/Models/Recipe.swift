@@ -16,8 +16,12 @@ extension Identifiable {
     public typealias Id = SimpleTag<Self, String>
 }
 
-public struct Recipe: MacroCalculatable, Identifiable {
-    public typealias IngredientAndAmount = (ingredient: Ingredient, amount: Grams)
+public struct Recipe: MacroCalculatable, Identifiable, Equatable, Codable {
+    
+    public struct IngredientAndAmount: Equatable, Codable {
+        let ingredient: Ingredient
+        let amount: Grams
+    }
     
     public let id: Id
     

@@ -57,8 +57,8 @@ internal class RecipeObjectIngredientAndAmount: RealmSwift.Object {
         return object
     }
     
-    fileprivate func makeIngredientAndAmount() -> (ingredient: Ingredient, amount: Grams) {
-        return (self.ingredient!.makeIngredient(), .init(rawValue: self.amount))
+    fileprivate func makeIngredientAndAmount() -> Recipe.IngredientAndAmount {
+        return .init(ingredient: self.ingredient!.makeIngredient(), amount: .init(rawValue: self.amount))
     }
 }
 

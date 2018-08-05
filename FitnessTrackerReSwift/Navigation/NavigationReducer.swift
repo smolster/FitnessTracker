@@ -6,8 +6,6 @@
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
-import ReSwift
-
 internal func navigationReducer(_ oldState: ViewState, action: NavigationAction) -> ViewState {
     var newState = oldState
     

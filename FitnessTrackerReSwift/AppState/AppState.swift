@@ -7,10 +7,9 @@
 //
 
 import Foundation
-import ReSwift
 import FitnessTrackerKit
 
-internal struct AppState: StateType {
+internal struct AppState: CoreState {
     var viewState: ViewState
     
     var allMeals: Resource<[Meal]>
@@ -18,7 +17,7 @@ internal struct AppState: StateType {
     var allRecipes: Resource<[Recipe]>
     var allMealsByDay: Resource<[Day]>
     
-//    var ingredientEntryState: 
+//    var ingredientEntryState:
 }
 
 extension AppState: HasInitial {

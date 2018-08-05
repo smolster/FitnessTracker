@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import ReSwift
 import UIKit
 import FitnessTrackerKit
+import RxSwift
 
 /**
  This class subscribes to the `AppState`'s `viewState`, and makes changes to the navigation according to updates.
@@ -18,14 +18,29 @@ final internal class NavigationManager {
     
     public static let shared = NavigationManager()
     
+    private let disposeBag = DisposeBag()
     internal let rootTabController = RootTabController()
-    
     private var isInitialLoad = true
-    
     private var previousState: ViewState = store.state.viewState
-    
+
     private init() {
-        store.subscribe(self, transform: { $0.select({ $0.viewState }) })
+        store.observable
+            .map { $0.viewState }
+            .subscribeToNext { viewState in
+                dispatchToMainIfNeeded { [weak self] in
+                    guard let strongSelf = self else { return }
+                    if strongSelf.isInitialLoad {
+                        strongSelf.render(viewState: viewState)
+                        strongSelf.isInitialLoad = false
+                    } else {
+                        for change in strongSelf.previousState.differences(to: viewState).orderedForRendering() {
+                            strongSelf.applyChange(change, animated: true)
+                        }
+                    }
+                    strongSelf.previousState = viewState
+                }
+            }
+            .disposed(by: self.disposeBag)
     }
     
     fileprivate func render(viewState: ViewState) {
@@ -124,26 +139,6 @@ final internal class NavigationManager {
         let navigationVC = navigationVCs[tab.index]
         return navigationVC.topViewController!
     }
-}
-
-extension NavigationManager: StoreSubscriber {
-    func newState(state: ViewState) {
-        dispatchToMainIfNeeded { [weak self] in
-            guard let strongSelf = self else {
-                return
-            }
-            if strongSelf.isInitialLoad {
-                strongSelf.render(viewState: state)
-                strongSelf.isInitialLoad = false
-            } else {
-                for change in strongSelf.previousState.differences(to: state).orderedForRendering() {
-                    strongSelf.applyChange(change, animated: true)
-                }
-            }
-            strongSelf.previousState = state
-        }
-    }
-    
 }
 
 fileprivate extension Array where Element == ViewState.Change {

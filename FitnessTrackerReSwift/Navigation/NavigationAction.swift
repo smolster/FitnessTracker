@@ -6,8 +6,6 @@
 //  Copyright © 2018 Swain Molster. All rights reserved.
 //
 
-import ReSwift
-
 internal enum NavigationAction: CoreAction {
     
     /// Switches to a provided tab.

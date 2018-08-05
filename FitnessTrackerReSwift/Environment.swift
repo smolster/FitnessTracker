@@ -11,9 +11,13 @@ import FitnessTrackerKit
 internal let Current: Environment = .default
 
 internal struct Environment {
+    let store: Store<AppState>
     let network: NetworkProvider
 }
 
 extension Environment {
-    static let `default` = Environment(network: NetworkProvider(service: APIService()))
+    static let `default` = Environment(
+        store: Store<AppState>(initialValue: .initial, reducer: { action, state in return state }, middlewares: []),
+        network: NetworkProvider(service: APIService())
+    )
 }

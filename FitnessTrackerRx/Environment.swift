@@ -13,9 +13,10 @@ import FitnessTrackerKit
 internal let Current: Environment = .default
 
 internal struct Environment {
+    let state: AppState
     let service: APIServiceType
 }
 
 extension Environment {
-    static internal let `default` = Environment(service: APIService())
+    static internal let `default` = Environment(service: APIService(), state: .initial)
 }

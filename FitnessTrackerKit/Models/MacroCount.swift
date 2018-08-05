@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct MacroCount {
+public struct MacroCount: Codable, Equatable {
     public var protein: Grams
     public var carbs: Grams
     public var fat: Grams

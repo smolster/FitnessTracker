@@ -71,14 +71,14 @@ internal class MealObjectComponentAndAmount: RealmSwift.Object {
         return object
     }
     
-    fileprivate func makeComponentAndAmount() -> (component: Meal.Component, amount: Grams) {
+    fileprivate func makeComponentAndAmount() -> Meal.ComponentAndAmount {
         let component: Meal.Component
         if let recipeObj = self.recipe {
             component = .recipe(recipeObj.makeRecipe())
         } else {
             component = .ingredient(self.ingredient!.makeIngredient())
         }
-        return (component, .init(rawValue: self.amount))
+        return .init(component: component, amount: .init(rawValue: self.amount))
     }
     
 }

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		29D5C188D447869841711A86 /* Pods_FitnessTrackerReSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F96BEC9D0FFCD9AD016843 /* Pods_FitnessTrackerReSwift.framework */; };
 		6BDFF6524746D90B0295796D /* Pods_FitnessTrackerRx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 494B21E3089ECFB2B8A6D9F8 /* Pods_FitnessTrackerRx.framework */; };
+		A0003F72211093D900152ECC /* ObservableType+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0003F71211093D900152ECC /* ObservableType+Extension.swift */; };
+		A0003F742110F0C600152ECC /* NonpersistentContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0003F732110F0C600152ECC /* NonpersistentContainer.swift */; };
 		A01A1A542108A91200F05073 /* OptionalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A532108A91200F05073 /* OptionalType.swift */; };
 		A01A1A5E210AB8E400F05073 /* UIViewController+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A5D210AB8E400F05073 /* UIViewController+Alert.swift */; };
 		A01A1A60210ABBB100F05073 /* UITableViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A5F210ABBB100F05073 /* UITableViewController+Extension.swift */; };
@@ -20,6 +22,7 @@
 		A058D6172104CAFB00FA9CA4 /* IngredientCreationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A058D6142104CAFB00FA9CA4 /* IngredientCreationViewModel.swift */; };
 		A058D61A2104D68100FA9CA4 /* IngredientObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A058D6192104D68100FA9CA4 /* IngredientObject.swift */; };
 		A0649B982106B4FD00360345 /* DispatchFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0649B972106B4FD00360345 /* DispatchFunctions.swift */; };
+		A06E1813210F7FE300DF1E68 /* ReduxProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A06E1812210F7FE300DF1E68 /* ReduxProtocols.swift */; };
 		A08A9D6E2104FC2E0083E278 /* GlobalStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08A9D6D2104FC2E0083E278 /* GlobalStyles.swift */; };
 		A09239902105051E00125A38 /* MacroCalculatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092398F2105051E00125A38 /* MacroCalculatable.swift */; };
 		A09239922105089700125A38 /* RecipeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239912105089700125A38 /* RecipeObject.swift */; };
@@ -114,6 +117,8 @@
 		A0EBAD5F210EB91800DAB5E5 /* Observable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09239972105167000125A38 /* Observable+Extension.swift */; };
 		A0EBAD60210EB91800DAB5E5 /* ObserverType+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01A1A59210AA7CA00F05073 /* ObserverType+Extension.swift */; };
 		A0EBAD61210EB91800DAB5E5 /* Reactive+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092399A210516AC00125A38 /* Reactive+Extension.swift */; };
+		A0EBAD63210F767200DAB5E5 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EBAD62210F767200DAB5E5 /* AppState.swift */; };
+		A0EBAD65210F774A00DAB5E5 /* AllMealsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EBAD64210F774A00DAB5E5 /* AllMealsViewModel.swift */; };
 		A6AC1DE0C5B6DDB32DB777AF /* Pods_FitnessTrackerRxTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401AB6031281D92C51584029 /* Pods_FitnessTrackerRxTests.framework */; };
 		D85C08A4ECC4B64ED1E70226 /* Pods_FitnessTrackerKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E9C4301668A80F77FFA0973 /* Pods_FitnessTrackerKitTests.framework */; };
 		E2B5C369A01E9D8DCBFC04EF /* Pods_FitnessTrackerReSwiftTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03EFF7BF97B3DA8583503D4F /* Pods_FitnessTrackerReSwiftTests.framework */; };
@@ -201,6 +206,8 @@
 		810DE9034DD0CEBCB6D162D6 /* Pods-FitnessTrackerReSwiftTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessTrackerReSwiftTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FitnessTrackerReSwiftTests/Pods-FitnessTrackerReSwiftTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9938D25901044617CE3B70F5 /* Pods-FitnessTrackerKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessTrackerKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FitnessTrackerKit/Pods-FitnessTrackerKit.debug.xcconfig"; sourceTree = "<group>"; };
 		9E9C4301668A80F77FFA0973 /* Pods_FitnessTrackerKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FitnessTrackerKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0003F71211093D900152ECC /* ObservableType+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObservableType+Extension.swift"; sourceTree = "<group>"; };
+		A0003F732110F0C600152ECC /* NonpersistentContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonpersistentContainer.swift; sourceTree = "<group>"; };
 		A01A1A532108A91200F05073 /* OptionalType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalType.swift; sourceTree = "<group>"; };
 		A01A1A59210AA7CA00F05073 /* ObserverType+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObserverType+Extension.swift"; sourceTree = "<group>"; };
 		A01A1A5D210AB8E400F05073 /* UIViewController+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Alert.swift"; sourceTree = "<group>"; };
@@ -226,6 +233,7 @@
 		A0649B9A2106B56A00360345 /* ViewState+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewState+Diffable.swift"; sourceTree = "<group>"; };
 		A0649B9C2106B59F00360345 /* Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diffable.swift; sourceTree = "<group>"; };
 		A0649B9E2106B61200360345 /* NavigationAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationAction.swift; sourceTree = "<group>"; };
+		A06E1812210F7FE300DF1E68 /* ReduxProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduxProtocols.swift; sourceTree = "<group>"; };
 		A08A9D6D2104FC2E0083E278 /* GlobalStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalStyles.swift; sourceTree = "<group>"; };
 		A092398F2105051E00125A38 /* MacroCalculatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroCalculatable.swift; sourceTree = "<group>"; };
 		A09239912105089700125A38 /* RecipeObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeObject.swift; sourceTree = "<group>"; };
@@ -320,6 +328,8 @@
 		A0E22814210BB38900832E74 /* FitnessTrackerReSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitnessTrackerReSwiftTests.swift; sourceTree = "<group>"; };
 		A0E22816210BB38900832E74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A0EBAD59210EB70B00DAB5E5 /* UIAlertController+Reactive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Reactive.swift"; sourceTree = "<group>"; };
+		A0EBAD62210F767200DAB5E5 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		A0EBAD64210F774A00DAB5E5 /* AllMealsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMealsViewModel.swift; sourceTree = "<group>"; };
 		A3F96BEC9D0FFCD9AD016843 /* Pods_FitnessTrackerReSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FitnessTrackerReSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AED24BC86CD16F27C75526B5 /* Pods-FitnessTrackerRx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessTrackerRx.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FitnessTrackerRx/Pods-FitnessTrackerRx.debug.xcconfig"; sourceTree = "<group>"; };
 		C05E7CDC459497140C275E2E /* Pods-FitnessTrackerReSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessTrackerReSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-FitnessTrackerReSwift/Pods-FitnessTrackerReSwift.release.xcconfig"; sourceTree = "<group>"; };
@@ -421,6 +431,14 @@
 				401AB6031281D92C51584029 /* Pods_FitnessTrackerRxTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A0003F6E21108EDD00152ECC /* Redux */ = {
+			isa = PBXGroup;
+			children = (
+				A06E1812210F7FE300DF1E68 /* ReduxProtocols.swift */,
+			);
+			path = Redux;
 			sourceTree = "<group>";
 		};
 		A01A1A63210ABDCB00F05073 /* UIKit Extensions */ = {
@@ -565,6 +583,7 @@
 				A0A8E3EA20FFD48C00782D1B /* AppDelegate.swift */,
 				A0A8E3EC20FFD48C00782D1B /* RootTabController.swift */,
 				A03DA995210EAECB00DDB20E /* Environment.swift */,
+				A0EBAD62210F767200DAB5E5 /* AppState.swift */,
 				A0C25F48210BE07B006E1673 /* API */,
 				A0C25F4B210BE09F006E1673 /* Features */,
 				A0C25F4C210BE0F4006E1673 /* Reactive Extensions */,
@@ -607,6 +626,7 @@
 			isa = PBXGroup;
 			children = (
 				A0C25F1F210BBCD7006E1673 /* AllMealsViewController.swift */,
+				A0EBAD64210F774A00DAB5E5 /* AllMealsViewModel.swift */,
 			);
 			path = "All Meals";
 			sourceTree = "<group>";
@@ -620,6 +640,7 @@
 				A0C25F2C210BC50A006E1673 /* WeakBox.swift */,
 				A0649B922106B37400360345 /* UIViewController+Swizzling.swift */,
 				A0C25F41210BDB60006E1673 /* UIControl+TargetAction.swift */,
+				A0003F732110F0C600152ECC /* NonpersistentContainer.swift */,
 			);
 			path = Misc;
 			sourceTree = "<group>";
@@ -821,12 +842,13 @@
 		A0E227FE210BB38700832E74 /* FitnessTrackerReSwift */ = {
 			isa = PBXGroup;
 			children = (
+				A0003F6E21108EDD00152ECC /* Redux */,
 				A0E227FF210BB38700832E74 /* AppDelegate.swift */,
 				A0C25F22210BBD1F006E1673 /* RootTabController.swift */,
 				A0649B8C2106A7D000360345 /* ViewController.swift */,
 				A0C25F53210BFE3A006E1673 /* Environment.swift */,
-				A0C25F45210BE011006E1673 /* API */,
 				A0649B902106B31000360345 /* AppState */,
+				A0C25F45210BE011006E1673 /* API */,
 				A0649B992106B55A00360345 /* ViewState */,
 				A0C25F33210BD3A4006E1673 /* Navigation */,
 				A0C25F36210BD3FE006E1673 /* Action Protocols */,
@@ -835,6 +857,7 @@
 				A0E22806210BB38800832E74 /* Assets.xcassets */,
 				A0E22808210BB38800832E74 /* LaunchScreen.storyboard */,
 				A0E2280B210BB38800832E74 /* Info.plist */,
+				A0003F71211093D900152ECC /* ObservableType+Extension.swift */,
 			);
 			path = FitnessTrackerReSwift;
 			sourceTree = "<group>";
@@ -1095,13 +1118,13 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-FitnessTrackerReSwift/Pods-FitnessTrackerReSwift-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/ReSwift/ReSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
 				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
 			);
@@ -1282,6 +1305,7 @@
 				A0E1D35E2100295100CC7B54 /* AllMealsViewModel.swift in Sources */,
 				A0DABF5B21027CEE000AB641 /* MealEntryViewModel.swift in Sources */,
 				A0A8E3EB20FFD48C00782D1B /* AppDelegate.swift in Sources */,
+				A0EBAD63210F767200DAB5E5 /* AppState.swift in Sources */,
 				A058D6162104CAFB00FA9CA4 /* IngredientCreationViewController.swift in Sources */,
 				A03DA996210EAECB00DDB20E /* Environment.swift in Sources */,
 				A058D6172104CAFB00FA9CA4 /* IngredientCreationViewModel.swift in Sources */,
@@ -1361,9 +1385,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0003F72211093D900152ECC /* ObservableType+Extension.swift in Sources */,
 				A0C25F38210BD414006E1673 /* LoggableAction.swift in Sources */,
 				A0C25F44210BDE81006E1673 /* TodayAction.swift in Sources */,
+				A0EBAD65210F774A00DAB5E5 /* AllMealsViewModel.swift in Sources */,
 				A0C25F05210BB959006E1673 /* AppStore.swift in Sources */,
+				A0003F742110F0C600152ECC /* NonpersistentContainer.swift in Sources */,
 				A0C25F42210BDB60006E1673 /* UIControl+TargetAction.swift in Sources */,
 				A0C25F04210BB80B006E1673 /* UIViewController+Swizzling.swift in Sources */,
 				A0C25F40210BDA1F006E1673 /* RouteReducer.swift in Sources */,
@@ -1388,6 +1415,7 @@
 				A0C25F12210BB96B006E1673 /* ViewController.swift in Sources */,
 				A0C25F0F210BB96B006E1673 /* AppReducer.swift in Sources */,
 				A0C25F47210BE023006E1673 /* APIService.swift in Sources */,
+				A06E1813210F7FE300DF1E68 /* ReduxProtocols.swift in Sources */,
 				A0C25F23210BBD1F006E1673 /* RootTabController.swift in Sources */,
 				A0C25F52210BF03F006E1673 /* ResourceAction.swift in Sources */,
 				A0C25F4F210BE18A006E1673 /* WeakBox.swift in Sources */,

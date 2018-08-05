@@ -8,19 +8,29 @@
 
 import Foundation
 
-public struct Day {
+public struct Day: Equatable, Codable {
+    
+    internal struct DisplayDate: Equatable, Codable {
+        let dateString: String
+        let timeZone: TimeZone
+    }
+    
     public let date: Date
     public let totalCalories: Calories
     public let totalMacros: MacroCount
     public let allMeals: [Meal]
-    public let displayDate: (dateString: String, timeZone: TimeZone)
+    internal let displayDateStruct: DisplayDate
+    
+    public var displayDate: (dateString: String, timeZone: TimeZone) {
+        return (self.displayDate.dateString, self.displayDateStruct.timeZone)
+    }
     
     init(date: Date, totalCalories: Calories, totalMacros: MacroCount, allMeals: [Meal], displayDate: (String, TimeZone)) {
         self.date = date
         self.totalCalories = totalCalories
         self.totalMacros = totalMacros
         self.allMeals = allMeals
-        self.displayDate = displayDate
+        self.displayDateStruct = .init(dateString: displayDate.0, timeZone: displayDate.1)
     }
     
     public var isToday: Bool {

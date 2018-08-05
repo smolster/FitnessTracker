@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Ingredient: MacroCalculatable, Identifiable {
+public struct Ingredient: MacroCalculatable, Identifiable, Equatable, Codable {
     
     /// Unique identifier
     public let id: Id

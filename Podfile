@@ -16,7 +16,7 @@ end
 target 'FitnessTrackerReSwift' do
     use_frameworks!
     
-    pod 'ReSwift'
+    pod 'RxSwift'
     
     target 'FitnessTrackerReSwiftTests' do
         inherit! :search_paths
