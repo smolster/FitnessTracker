@@ -12,14 +12,16 @@ public protocol Action { }
 
 public typealias Reducer<State> = (Action, State) -> State
 
-public typealias Middleware = (Action) -> Void
+public typealias GetState<State> = () -> State
+
+public typealias Middleware<State> = (Action, GetState<State>) -> Void
 
 public class Store<State> {
     private let queue: DispatchQueue
     private let _publishSubject: PublishSubject<State>
     private var _state: State
     private let reducer: Reducer<State>
-    private let middlewares: [Middleware]
+    private let middlewares: [Middleware<State>]
     
     public var observable: Observable<State> { return _publishSubject.asObservable() }
     
@@ -29,7 +31,7 @@ public class Store<State> {
         initialValue: State,
         queueLabel: String = "Store Queue",
         reducer: @escaping Reducer<State>,
-        middlewares: [Middleware]
+        middlewares: [Middleware<State>]
     ) {
         self.queue = DispatchQueue(label: queueLabel)
         self._publishSubject = PublishSubject<State>()
@@ -41,7 +43,11 @@ public class Store<State> {
     /// Dispatches an `action` to the store.
     public func dispatch(_ action: Action) {
         queue.async { [unowned self] in
-            self.middlewares.forEach { $0(action) }
+            let getState: GetState<State> = { [unowned self] in
+                return self.reducer(action, self._state)
+            }
+            
+            self.middlewares.forEach { $0(action, getState) }
             
             self._state = self.reducer(action, self._state)
             self._publishSubject.onNext(self._state)
